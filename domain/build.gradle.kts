@@ -1,6 +1,6 @@
+import extensions.domainModuleDeps
 import extensions.implementation
 import extensions.project
-import extensions.room
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -23,7 +23,6 @@ android {
 
 dependencies {
     implementation(project(Modules.common))
-    implementation(project(Modules.core))
 
-    room()
+    domainModuleDeps()
 }

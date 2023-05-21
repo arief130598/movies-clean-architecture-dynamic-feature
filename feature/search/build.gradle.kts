@@ -1,5 +1,6 @@
-import extensions.coreModuleDeps
-import extensions.featureModuleDeps
+import extensions.implementation
+import extensions.kapt
+import extensions.project
 
 plugins {
     id(Plugins.ANDROID_DYNAMIC_FEATURE)
@@ -47,11 +48,14 @@ kapt {
 }
 
 dependencies {
-    implementation(project(Modules.app))
-    implementation(project(Modules.core))
+    // Libraries
     implementation(project(Modules.common))
+    implementation(project(Modules.core))
+    implementation(project(Modules.app))
+    implementation(project(Modules.data))
     implementation(project(Modules.domain))
 
-    coreModuleDeps()
-    featureModuleDeps()
+    // Hilt
+    implementation(Deps.DaggerHilt.hiltAndroid)
+    kapt(Deps.DaggerHilt.hiltAndroidCompiler)
 }

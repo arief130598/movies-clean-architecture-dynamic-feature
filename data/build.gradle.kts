@@ -1,4 +1,4 @@
-import extensions.coreModuleDeps
+import extensions.dataModuleDeps
 import extensions.implementation
 import extensions.project
 
@@ -22,7 +22,8 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.core))
     implementation(project(Modules.common))
     implementation(project(Modules.domain))
+
+    dataModuleDeps()
 }

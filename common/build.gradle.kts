@@ -1,6 +1,3 @@
-import extensions.coreModuleDeps
-import extensions.featureModuleDeps
-
 plugins {
     id(Plugins.ANDROID_LIBRARY)
     id(Plugins.ANDROID)
@@ -24,6 +21,5 @@ android {
 }
 
 dependencies {
-    coreModuleDeps()
-    featureModuleDeps()
+    implementation(project(Modules.core))
 }

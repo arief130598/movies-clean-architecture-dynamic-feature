@@ -1,5 +1,4 @@
 import extensions.coreModuleDeps
-import extensions.featureModuleDeps
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -22,5 +21,4 @@ android {
 
 dependencies {
     coreModuleDeps()
-    featureModuleDeps()
 }
