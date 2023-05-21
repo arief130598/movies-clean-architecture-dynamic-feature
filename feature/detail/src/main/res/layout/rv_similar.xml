@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mainCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/dim8"
+        app:cardElevation="@dimen/dim4"
+        app:strokeColor="@color/gray"
+        app:strokeWidth="0.8dp"
+        android:layout_marginTop="@dimen/dim8"
+        android:layout_marginBottom="@dimen/dim8"
+        android:layout_marginEnd="@dimen/dim16">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <ImageView
+                android:id="@+id/poster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="@dimen/dim100"
+                android:maxHeight="@dimen/dim160"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:src="@drawable/no_image"
+                android:contentDescription="@string/poster"/>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/dim80"
+                android:maxWidth="@dimen/dim120"
+                android:padding="@dimen/dim4"
+                android:fontFamily="@font/roboto"
+                android:textAlignment="center"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/text14"
+                android:textStyle="bold"
+                tools:text="Black Adam" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

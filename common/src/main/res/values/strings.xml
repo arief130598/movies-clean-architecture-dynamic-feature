@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_url">https://image.tmdb.org/t/p/w185</string>
+    <string name="poster">Poster</string>
+    <string name="favorite">Favorite</string>
+    <string name="rating">Rating :</string>
+</resources>

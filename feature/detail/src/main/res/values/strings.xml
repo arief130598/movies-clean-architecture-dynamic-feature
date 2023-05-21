@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="background_poster">Background Poster</string>
+    <string name="release_date">Release Date :</string>
+    <string name="popularity">Popularity :</string>
+    <string name="rating_total">Rating Total :</string>
+    <string name="language">Language :</string>
+    <string name="background_image_url">https://image.tmdb.org/t/p/w780</string>
+</resources>
