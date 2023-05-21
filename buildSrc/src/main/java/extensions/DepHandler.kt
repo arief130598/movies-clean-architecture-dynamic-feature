@@ -18,7 +18,7 @@ fun DependencyHandler.featureModuleDeps() {
     implementation(Deps.AndroidX.Constraint.constraintLayout)
     implementation(Deps.AndroidX.Coordinator.coordinatorLayout)
     implementation(Deps.Shimmer.shimmer)
-//    glide()
+    glide()
     lifecycle()
     navigation()
 }

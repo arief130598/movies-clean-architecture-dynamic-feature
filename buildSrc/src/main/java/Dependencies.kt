@@ -106,7 +106,7 @@ object Deps {
     }
 
     object Glide {
-        private const val version = "4.15.1"
+        private const val version = "4.11.0"
         const val glide = "com.github.bumptech.glide:glide:$version"
         const val compiler = "com.github.bumptech.glide:compiler:$version"
     }
