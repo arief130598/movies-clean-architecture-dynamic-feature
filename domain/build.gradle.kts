@@ -1,6 +1,4 @@
 import extensions.domainModuleDeps
-import extensions.implementation
-import extensions.project
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -22,7 +20,5 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.common))
-
     domainModuleDeps()
 }

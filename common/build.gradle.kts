@@ -1,3 +1,6 @@
+import extensions.implementation
+import extensions.kapt
+
 plugins {
     id(Plugins.ANDROID_LIBRARY)
     id(Plugins.ANDROID)
@@ -22,4 +25,9 @@ android {
 
 dependencies {
     implementation(project(Modules.core))
+    implementation(project(Modules.domain))
+
+    // Hilt
+    implementation(Deps.DaggerHilt.hiltAndroid)
+    kapt(Deps.DaggerHilt.hiltAndroidCompiler)
 }
