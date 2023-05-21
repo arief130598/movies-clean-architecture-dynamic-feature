@@ -48,6 +48,9 @@ kapt {
 
 dependencies {
     implementation(project(Modules.app))
+    implementation(project(Modules.core))
+    implementation(project(Modules.common))
+    implementation(project(Modules.domain))
 
     coreModuleDeps()
     featureModuleDeps()
