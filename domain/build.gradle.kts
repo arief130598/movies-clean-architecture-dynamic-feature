@@ -20,5 +20,7 @@ android {
 }
 
 dependencies {
+    implementation(project(Modules.core))
+
     domainModuleDeps()
 }

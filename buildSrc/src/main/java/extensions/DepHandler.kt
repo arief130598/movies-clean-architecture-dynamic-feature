@@ -29,6 +29,9 @@ fun DependencyHandler.coreModuleDeps() {
     api(Deps.Glide.glide)
     api(Deps.Glide.compiler)
 
+    api(Deps.Coroutines.core)
+    api(Deps.Coroutines.android)
+
     api(Deps.AndroidX.Lifecycle.runtime)
     api(Deps.AndroidX.Lifecycle.viewModel)
     api(Deps.AndroidX.Lifecycle.liveData)
@@ -57,6 +60,11 @@ fun DependencyHandler.domainModuleDeps(){
     kapt(Deps.AndroidX.Room.compiler)
     implementation(Deps.AndroidX.Room.ktx)
     implementation(Deps.AndroidX.Room.runtime)
+
+    implementation(Deps.Retrofit.retrofit)
+    implementation(Deps.Retrofit.moshiConverter)
+    implementation(Deps.OkHttp.okhttp)
+    implementation(Deps.OkHttp.logging)
 
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)

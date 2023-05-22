@@ -1,5 +1,6 @@
 import extensions.dataModuleDeps
 import extensions.implementation
+import extensions.kapt
 import extensions.project
 
 plugins {
@@ -22,8 +23,12 @@ android {
 }
 
 dependencies {
-    implementation(project(Modules.common))
+    implementation(project(Modules.core))
     implementation(project(Modules.domain))
 
     dataModuleDeps()
+
+    // Hilt
+    implementation(Deps.DaggerHilt.hiltAndroid)
+    kapt(Deps.DaggerHilt.hiltAndroidCompiler)
 }
