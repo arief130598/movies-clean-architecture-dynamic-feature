@@ -10,10 +10,6 @@ fun DependencyHandler.appModuleDeps() {
     implementation(Deps.AndroidX.Navigation.fragment)
     implementation(Deps.AndroidX.Navigation.dynamicFeaturesFragment)
 
-    api(Deps.Android.material)
-    api(Deps.AndroidX.appcompat)
-    api(Deps.AndroidX.Constraint.constraintLayout)
-
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)
 }

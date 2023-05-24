@@ -4,8 +4,8 @@ import com.aplus.domain.model.Genres
 import com.aplus.domain.repository.local.GenresRepository
 import javax.inject.Inject
 
-class GetList @Inject constructor(
+class InsertListGenres @Inject constructor(
     private val repository: GenresRepository
 ) {
-    suspend operator fun invoke() : List<Genres> = repository.getList()
+    suspend operator fun invoke(genres: List<Genres>) : List<Long> = repository.insertList(genres)
 }

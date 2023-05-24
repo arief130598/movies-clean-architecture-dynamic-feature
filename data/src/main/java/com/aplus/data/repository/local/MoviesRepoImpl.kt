@@ -1,5 +1,6 @@
 package com.aplus.data.repository.local
 
+import com.aplus.data.datasource.local.MoviesTable
 import com.aplus.data.di.MovieDatabase
 import com.aplus.domain.model.Movies
 import com.aplus.domain.repository.local.MoviesRepository
@@ -11,17 +12,17 @@ import javax.inject.Inject
  * Repository name must be same from Movies DAO
  *
  */
-class MoviesRepoImpl @Inject constructor(private val db: MovieDatabase) : MoviesRepository {
+class MoviesRepoImpl @Inject constructor(private val moviesTable: MoviesTable) : MoviesRepository {
 
-    override suspend fun getSingle(id: Int): Movies = db.moviesTable.getSingle(id)
+    override suspend fun getSingle(id: Int): Movies = moviesTable.getSingle(id)
 
-    override suspend fun getList(): List<Movies> = db.moviesTable.getList()
+    override suspend fun getList(): List<Movies> = moviesTable.getList()
 
-    override suspend fun insertList(movies: List<Movies>): List<Long> = db.moviesTable.insertList(movies)
+    override suspend fun insertList(movies: List<Movies>): List<Long> = moviesTable.insertList(movies)
 
-    override suspend fun insertSingle(movies: Movies): Long = db.moviesTable.insertSingle(movies)
+    override suspend fun insertSingle(movies: Movies): Long = moviesTable.insertSingle(movies)
 
-    override suspend fun deleteAll(): Int = db.moviesTable.deleteAll()
+    override suspend fun deleteAll(): Int = moviesTable.deleteAll()
 
-    override suspend fun deleteSingle(id: Int): Int = db.moviesTable.deleteSingle(id)
+    override suspend fun deleteSingle(id: Int): Int = moviesTable.deleteSingle(id)
 }

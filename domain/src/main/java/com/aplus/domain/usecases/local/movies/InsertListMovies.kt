@@ -1,10 +1,11 @@
 package com.aplus.domain.usecases.local.movies
 
+import com.aplus.domain.model.Movies
 import com.aplus.domain.repository.local.MoviesRepository
 import javax.inject.Inject
 
-class DeleteSingle @Inject constructor(
+class InsertListMovies @Inject constructor(
     private val repository: MoviesRepository
 ) {
-    suspend operator fun invoke(id: Int) : Int = repository.deleteSingle(id)
+    suspend operator fun invoke(movies: List<Movies>) : List<Long> = repository.insertList(movies)
 }

@@ -16,11 +16,10 @@ import com.aplus.feature.home.databinding.FragmentPopularBinding
 import com.aplus.feature.home.presentation.viewmodel.PopularViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class PopularFragment : Fragment() {
 
     private lateinit var binding: FragmentPopularBinding
-    private val viewModel : PopularViewModel by viewModels()
+//    private val viewModel : PopularViewModel by viewModels()
 //    private val viewModelMovie : MovieViewModel by viewModels()
 //    private lateinit var adapter: MovieAdapter
     private var loadingMore = false
@@ -70,7 +69,7 @@ class PopularFragment : Fragment() {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                viewModel.setLastPosition(layoutManager.findFirstVisibleItemPosition())
+//                viewModel.setLastPosition(layoutManager.findFirstVisibleItemPosition())
             }
         })
 
@@ -86,9 +85,9 @@ class PopularFragment : Fragment() {
 //            adapter.setGenre(it)
 //        }
 
-        viewModel.movies.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Status.SUCCESS -> {
+//        viewModel.movies.observe(viewLifecycleOwner) {
+//            when (it.status) {
+//                Status.SUCCESS -> {
 //                    if(adapter.itemCount == 0) {
 //                        binding.mainShimmer.apply {
 //                                stopShimmer()
@@ -101,23 +100,23 @@ class PopularFragment : Fragment() {
 //                        adapter.addData(it.data!!)
 //                        binding.rvData.scrollToPosition(viewModel.lastPositionAdapter)
 //                    }
-                }
-                Status.LOADING -> {
+//                }
+//                Status.LOADING -> {
 //                    if(adapter.itemCount == 0) {
 //                        binding.mainShimmer.apply {
 //                            startShimmer()
 //                            visibility = View.VISIBLE
 //                        }
 //                    }
-                }
-                Status.ERROR -> {
-                    binding.mainShimmer.apply {
-                        stopShimmer()
-                        visibility = View.GONE
-                    }
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
+//                }
+//                Status.ERROR -> {
+//                    binding.mainShimmer.apply {
+//                        stopShimmer()
+//                        visibility = View.GONE
+//                    }
+//                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        }
     }
 }
