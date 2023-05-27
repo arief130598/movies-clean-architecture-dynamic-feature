@@ -4,10 +4,10 @@ import extensions.implementation
 plugins {
     id(Plugins.ANDROID_APPLICATION)
     id(Plugins.ANDROID)
-    kotlin(Plugins.KAPT)
     id(Plugins.NAVIGATION_SAFE_ARGS)
     id(Plugins.DAGGER_HILT)
     id(Plugins.DOKKA)
+    kotlin(Plugins.KAPT)
 }
 
 android {
@@ -40,19 +40,17 @@ android {
     buildFeatures {
         dataBinding = true
     }
-    dynamicFeatures += setOf(
-        DynamicFeature.home,
-        DynamicFeature.detail,
-        DynamicFeature.search,
-        DynamicFeature.favorite,
-    )
 }
 
 dependencies {
     implementation(project(Modules.core))
     implementation(project(Modules.common))
-    implementation(project(Modules.data))
     implementation(project(Modules.domain))
+
+    implementation(project(Feature.home))
+    implementation(project(Feature.favorite))
+    implementation(project(Feature.search))
+    implementation(project(Feature.detail))
 
     appModuleDeps()
 }

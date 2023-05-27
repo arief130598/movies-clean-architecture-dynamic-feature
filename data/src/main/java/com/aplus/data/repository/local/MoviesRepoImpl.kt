@@ -5,6 +5,7 @@ import com.aplus.data.di.MovieDatabase
 import com.aplus.domain.model.Movies
 import com.aplus.domain.repository.local.MoviesRepository
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 /**
  *
@@ -16,7 +17,7 @@ class MoviesRepoImpl @Inject constructor(private val moviesTable: MoviesTable) :
 
     override suspend fun getSingle(id: Int): Movies = moviesTable.getSingle(id)
 
-    override suspend fun getList(): List<Movies> = moviesTable.getList()
+    override fun getList(): Flow<List<Movies>> = moviesTable.getList()
 
     override suspend fun insertList(movies: List<Movies>): List<Long> = moviesTable.insertList(movies)
 

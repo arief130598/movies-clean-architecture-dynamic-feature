@@ -32,19 +32,19 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context) = MovieDatabase.getInstance(context)
+    fun provideDatabase(@ApplicationContext context: Context): MovieDatabase = MovieDatabase.getInstance(context)
 
     @Provides
     @Singleton
-    fun provideMoviesRepository(movieDatabase: MovieDatabase) = MoviesRepoImpl(movieDatabase.moviesTable)
+    fun provideMoviesRepository(movieDatabase: MovieDatabase): MoviesRepository = MoviesRepoImpl(movieDatabase.moviesTable)
 
     @Provides
     @Singleton
-    fun provideGenresRepository(movieDatabase: MovieDatabase) = GenresRepoImpl(movieDatabase.genresTable)
+    fun provideGenresRepository(movieDatabase: MovieDatabase): GenresRepository = GenresRepoImpl(movieDatabase.genresTable)
 
     @Provides
     @Singleton
-    fun provideMoviesUseCases(moviesRepository: MoviesRepository) = MoviesUseCases(
+    fun provideMoviesUseCases(moviesRepository: MoviesRepository): MoviesUseCases = MoviesUseCases(
         deleteAllMovies = DeleteAllMovies(moviesRepository),
         deleteSingleMovies = DeleteSingleMovies(moviesRepository),
         getListMovies = GetListMovies(moviesRepository),
@@ -55,7 +55,7 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideGenresUseCases(genresRepository: GenresRepository) = GenresUseCases(
+    fun provideGenresUseCases(genresRepository: GenresRepository): GenresUseCases = GenresUseCases(
         deleteAllGenres = DeleteAllGenres(genresRepository),
         deleteSingleGenres = DeleteSingleGenres(genresRepository),
         getListGenres = GetListGenres(genresRepository),

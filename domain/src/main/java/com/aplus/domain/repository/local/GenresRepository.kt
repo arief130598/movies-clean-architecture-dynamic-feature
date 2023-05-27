@@ -1,11 +1,12 @@
 package com.aplus.domain.repository.local
 
 import com.aplus.domain.model.Genres
+import kotlinx.coroutines.flow.Flow
 
 interface GenresRepository {
     suspend fun getSingle(id: Int): Genres
 
-    suspend fun getList(): List<Genres>
+    fun getList(): Flow<List<Genres>>
 
     suspend fun insertList(genres: List<Genres>): List<Long>
 

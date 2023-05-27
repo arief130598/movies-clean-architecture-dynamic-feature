@@ -1,6 +1,5 @@
-package com.aplus.common.presentation.ui.adapter
+package com.aplus.common.presentation.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +19,12 @@ import javax.inject.Inject
  */
 class MovieAdapter @Inject constructor(
     private var items: List<Movies>,
-    private val onClickFavorite: (Movies) -> Unit
+    private val onClickFavorite: (Movies) -> Unit,
+    private val onClickMovies: (Movies) -> Unit
 ) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
-    private var genres: List<Genres> = listOf()
-    private var favorite: MutableList<Movies> = mutableListOf()
+    private var listGenres: List<Genres> = listOf()
+    private var listFavorite: MutableList<Movies> = mutableListOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -34,49 +34,37 @@ class MovieAdapter @Inject constructor(
 
     override fun getItemCount(): Int = items.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position], position)
 
     inner class ViewHolder(val binding: RvMoviesBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Movies) {
+        fun bind(item: Movies, position: Int) = with(binding) {
             if(!item.poster_path.isNullOrEmpty()) {
                 Glide.with(itemView.context)
                     .load(itemView.context.getString(R.string.image_url) + item.poster_path)
                     .error(R.drawable.no_image)
-                    .into(binding.poster)
+                    .into(poster)
             }
-            binding.title.text = item.title
-            binding.rating.text = item.vote_average.toString()
-            binding.overview.text = limitOverview(item.overview)
-            binding.genres.text = convertGenres(item.genre_ids)
-            if(favorite.any { it.id == item.id }){
-                binding.favorite.setImageResource(R.drawable.ic_favorite_32)
+            title.text = item.title
+            rating.text = item.vote_average.toString()
+            overview.text = limitOverview(item.overview)
+            genres.text = convertGenres(item.genre_ids)
+            if(listFavorite.any { it.id == item.id }){
+                favorite.setImageResource(R.drawable.ic_favorite_32)
             }else{
-                binding.favorite.setImageResource(R.drawable.ic_favorite_border_32)
+                favorite.setImageResource(R.drawable.ic_favorite_border_32)
             }
-            binding.favorite.setOnClickListener {
-//                if(favorite.any { it.id == item.id }){
-//                    deleteFavorite(item)
-//                }else{
-//                    addFavorite(item)
-//                }
+            favorite.setOnClickListener{
+                if(listFavorite.any { it.id == item.id }){
+                    favorite.setImageResource(R.drawable.ic_favorite_border_32)
+                }else{
+                    favorite.setImageResource(R.drawable.ic_favorite_32)
+                }
+                onClickFavorite(item) 
             }
-//            binding.mainCard.setOnClickListener {
-//                val bundle = bundleOf("movies" to item)
-//                fragment.findNavController().navigate(R.id.detailFragment, bundle)
-//            }
-            binding.executePendingBindings()
+            mainCard.setOnClickListener { onClickMovies(item) }
+            executePendingBindings()
         }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun clearData(){
-        this.items = listOf()
-        notifyDataSetChanged()
-    }
-
-    fun setData(data : List<Movies>){
-        this.items = data
     }
 
     fun addData(data : List<Movies>){
@@ -86,18 +74,22 @@ class MovieAdapter @Inject constructor(
     }
 
     fun setGenre(data : List<Genres>){
-        this.genres = data
+        this.listGenres = data
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     fun setFavorite(data : List<Movies>){
-        this.favorite = data as MutableList<Movies>
-        notifyDataSetChanged()
+        this.listFavorite = data as MutableList<Movies>
     }
 
-    /**
-     * Limiting the maximum of overview chars to 100
-     */
+    fun changeFavorite(movies: Movies, position: Int){
+        if(listFavorite.contains(movies)){
+            listFavorite.remove(movies)
+        }else{
+            listFavorite.add(movies)
+        }
+        notifyItemChanged(position)
+    }
+    
     fun limitOverview(data: String): String{
         return if(data.length > 100) {
             var overview = data.substring(0, 100)
@@ -109,15 +101,12 @@ class MovieAdapter @Inject constructor(
             data
         }
     }
-
-    /**
-     * List of Genres displaying with code, this function converting from that code to Genre Name
-     */
+    
     fun convertGenres(data: List<Int>): String{
         var genres = ""
         return if(data.isNotEmpty()) {
             data.forEach {
-                val item = this.genres.filter { x -> x.id == it }
+                val item = this.listGenres.filter { x -> x.id == it }
                 genres += if (item.isNotEmpty()) {
                     "${item[0].name}, "
                 }else{

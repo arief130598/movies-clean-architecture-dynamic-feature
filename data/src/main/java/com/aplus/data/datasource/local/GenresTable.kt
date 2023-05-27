@@ -5,11 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.aplus.domain.model.Genres
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GenresTable {
     @Query("SELECT * FROM genres")
-    fun getList(): List<Genres>
+    fun getList(): Flow<List<Genres>>
 
     @Query("SELECT * FROM genres WHERE id = :id")
     fun getSingle(id: Int): Genres

@@ -3,7 +3,7 @@ import extensions.kapt
 import extensions.project
 
 plugins {
-    id(Plugins.ANDROID_DYNAMIC_FEATURE)
+    id(Plugins.ANDROID_LIBRARY)
     id(Plugins.ANDROID)
     id(Plugins.NAVIGATION_SAFE_ARGS)
     id(Plugins.DAGGER_HILT)
@@ -52,7 +52,6 @@ dependencies {
     // Libraries
     implementation(project(Modules.common))
     implementation(project(Modules.core))
-    implementation(project(Modules.app))
     implementation(project(Modules.data))
     implementation(project(Modules.domain))
 

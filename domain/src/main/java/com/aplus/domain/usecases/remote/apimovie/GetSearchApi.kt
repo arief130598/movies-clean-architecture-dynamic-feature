@@ -5,9 +5,9 @@ import com.aplus.domain.repository.remote.ApiMovieRepository
 import javax.inject.Inject
 import retrofit2.Response
 
-class GetSimilar @Inject constructor(
+class GetSearchApi @Inject constructor(
     private val repository: ApiMovieRepository
 ) {
-    suspend operator fun invoke(movieId: Int, apiKey: String, page: Int) : Response<MoviesResponse> =
-        repository.getSimilar(movieId, apiKey, page)
+    suspend operator fun invoke(query: String, page: Int) : Response<MoviesResponse>
+    = repository.getSearch(query, page)
 }

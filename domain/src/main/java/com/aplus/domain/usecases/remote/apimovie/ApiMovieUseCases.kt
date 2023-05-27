@@ -1,10 +1,10 @@
 package com.aplus.domain.usecases.remote.apimovie
 
 data class ApiMovieUseCases (
-    val getGenres: GetGenres,
-    val getNowPlaying: GetNowPlaying,
-    val getPopular: GetPopular,
-    val getSearch: GetSearch,
-    val getSimilar: GetSimilar,
-    val getUpcoming: GetUpcoming
+    val getGenresApi: GetGenresApi,
+    val getNowPlayingApi: GetNowPlayingApi,
+    val getPopularApi: GetPopularApi,
+    val getSearchApi: GetSearchApi,
+    val getSimilarApi: GetSimilarApi,
+    val getUpcoming: GetUpcomingApi
 )

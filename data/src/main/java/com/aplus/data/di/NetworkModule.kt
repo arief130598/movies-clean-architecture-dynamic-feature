@@ -3,6 +3,16 @@ package com.aplus.data.di
 import android.app.Application
 import com.aplus.core.utils.NetworkHelper
 import com.aplus.data.datasource.remote.ApiMovieDB
+import com.aplus.data.repository.remote.ApiMovieDBRepoImpl
+import com.aplus.domain.repository.remote.ApiMovieRepository
+import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
+import com.aplus.domain.usecases.remote.apimovie.GetGenresApi
+import com.aplus.domain.usecases.remote.apimovie.GetNowPlayingApi
+import com.aplus.domain.usecases.remote.apimovie.GetPopularApi
+import com.aplus.domain.usecases.remote.apimovie.GetSearchApi
+import com.aplus.domain.usecases.remote.apimovie.GetSimilarApi
+import com.aplus.domain.usecases.remote.apimovie.GetUpcomingApi
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,4 +66,19 @@ class NetworkModule {
     fun provideApiService(retrofit: Retrofit): ApiMovieDB =
         retrofit.create(ApiMovieDB::class.java)
 
+    @Provides
+    @Singleton
+    fun provideApiRepository(apiMovieDB: ApiMovieDB): ApiMovieRepository =
+        ApiMovieDBRepoImpl(apiMovieDB)
+
+    @Provides
+    @Singleton
+    fun provideApiUseCases(apiMovieRepository: ApiMovieRepository): ApiMovieUseCases = ApiMovieUseCases(
+            getGenresApi = GetGenresApi(apiMovieRepository),
+            getNowPlayingApi = GetNowPlayingApi(apiMovieRepository),
+            getPopularApi = GetPopularApi(apiMovieRepository),
+            getSearchApi = GetSearchApi(apiMovieRepository),
+            getSimilarApi = GetSimilarApi(apiMovieRepository),
+            getUpcoming = GetUpcomingApi(apiMovieRepository)
+        )
 }

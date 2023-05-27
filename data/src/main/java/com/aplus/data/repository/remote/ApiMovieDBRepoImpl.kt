@@ -16,15 +16,30 @@ import retrofit2.Response
 class ApiMovieDBRepoImpl @Inject constructor(private val apiMovieDB: ApiMovieDB) :
     ApiMovieRepository {
 
-    override suspend fun getGenres(api_key: String): Response<GenresResponse> = apiMovieDB.getGenres(api_key)
+    override suspend fun getGenres(): Response<GenresResponse> = apiMovieDB.getGenres()
 
-    override suspend fun getPopular(api_key: String, page:Int): Response<MoviesResponse> = apiMovieDB.getPopular(api_key, page)
+    override suspend fun getPopular(page: Int): Response<MoviesResponse> =
+        apiMovieDB.getPopular(page = page)
 
-    override suspend fun getNowPlaying(api_key: String, page:Int): Response<MoviesResponse> = apiMovieDB.getNowPlaying(api_key, page)
+    override suspend fun getNowPlaying(page: Int): Response<MoviesResponse> =
+        apiMovieDB.getNowPlaying(page = page)
 
-    override suspend fun getUpcoming(api_key: String, page:Int): Response<MoviesResponse> = apiMovieDB.getUpcoming(api_key, page)
+    override suspend fun getUpcoming(page: Int): Response<MoviesResponse> =
+        apiMovieDB.getUpcoming(page = page)
 
-    override suspend fun getSearch(api_key: String, query:String, page:Int): Response<MoviesResponse> = apiMovieDB.getSearch(api_key, query, page)
+    override suspend fun getSearch(
+        query: String,
+        page: Int
+    ): Response<MoviesResponse> = apiMovieDB.getSearch(
+        query = query,
+        page = page
+    )
 
-    override suspend fun getSimilar(movie_id: Int, api_key: String, page:Int): Response<MoviesResponse> = apiMovieDB.getSimilar(movie_id, api_key, page)
+    override suspend fun getSimilar(
+        movie_id: Int,
+        page: Int
+    ): Response<MoviesResponse> = apiMovieDB.getSimilar(
+        movie_id = movie_id,
+        page = page
+    )
 }

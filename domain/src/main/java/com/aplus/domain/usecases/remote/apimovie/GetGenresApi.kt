@@ -5,8 +5,8 @@ import com.aplus.domain.repository.remote.ApiMovieRepository
 import javax.inject.Inject
 import retrofit2.Response
 
-class GetGenres @Inject constructor(
+class GetGenresApi @Inject constructor(
     private val repository: ApiMovieRepository
 ) {
-    suspend operator fun invoke(apiKey: String) : Response<GenresResponse> = repository.getGenres(apiKey)
+    suspend operator fun invoke() : Response<GenresResponse> = repository.getGenres()
 }

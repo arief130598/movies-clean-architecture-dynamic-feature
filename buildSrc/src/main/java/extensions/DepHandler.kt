@@ -25,6 +25,11 @@ fun DependencyHandler.coreModuleDeps() {
     api(Deps.Glide.glide)
     api(Deps.Glide.compiler)
 
+    api(Deps.Retrofit.retrofit)
+    api(Deps.Retrofit.moshiConverter)
+    api(Deps.OkHttp.okhttp)
+    api(Deps.OkHttp.logging)
+
     api(Deps.Coroutines.core)
     api(Deps.Coroutines.android)
 
@@ -45,22 +50,12 @@ fun DependencyHandler.dataModuleDeps(){
     kapt(Deps.AndroidX.Room.compiler)
     implementation(Deps.AndroidX.Room.ktx)
     implementation(Deps.AndroidX.Room.runtime)
-
-    implementation(Deps.Retrofit.retrofit)
-    implementation(Deps.Retrofit.moshiConverter)
-    implementation(Deps.OkHttp.okhttp)
-    implementation(Deps.OkHttp.logging)
 }
 
 fun DependencyHandler.domainModuleDeps(){
     kapt(Deps.AndroidX.Room.compiler)
     implementation(Deps.AndroidX.Room.ktx)
     implementation(Deps.AndroidX.Room.runtime)
-
-    implementation(Deps.Retrofit.retrofit)
-    implementation(Deps.Retrofit.moshiConverter)
-    implementation(Deps.OkHttp.okhttp)
-    implementation(Deps.OkHttp.logging)
 
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)

@@ -9,7 +9,7 @@ object Modules {
 /*
     * Dynamic Feature Modules
     * */
-object DynamicFeature {
+object Feature {
     const val home = ":feature:home"
     const val detail = ":feature:detail"
     const val favorite = ":feature:favorite"

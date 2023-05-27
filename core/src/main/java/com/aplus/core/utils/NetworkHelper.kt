@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 /**
@@ -12,7 +13,7 @@ import javax.inject.Inject
  * @property context
  * @constructor Create empty Network helper
  */
-class NetworkHelper @Inject constructor(private val context: Context) {
+class NetworkHelper @Inject constructor(@ApplicationContext private val context: Context) {
 
     /**
      * Check if device network is Connected

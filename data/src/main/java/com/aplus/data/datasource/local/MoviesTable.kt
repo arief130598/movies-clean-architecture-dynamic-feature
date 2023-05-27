@@ -5,11 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.aplus.domain.model.Movies
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MoviesTable {
     @Query("SELECT * FROM movies")
-    fun getList(): List<Movies>
+    fun getList(): Flow<List<Movies>>
 
     @Query("SELECT * FROM movies WHERE id = :id")
     fun getSingle(id: Int): Movies

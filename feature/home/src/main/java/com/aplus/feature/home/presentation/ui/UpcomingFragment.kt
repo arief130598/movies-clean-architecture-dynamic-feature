@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aplus.common.presentation.adapter.MovieAdapter
 import com.aplus.core.utils.Status
 import com.aplus.feature.home.R
 import com.aplus.feature.home.databinding.FragmentUpcomingBinding
@@ -21,8 +22,7 @@ class UpcomingFragment : Fragment() {
 
     private lateinit var binding: FragmentUpcomingBinding
     private val viewModel : UpcomingViewModel by viewModels()
-//    private val viewModelMovie : MovieViewModel by viewModels()
-//    private lateinit var adapter: MovieAdapter
+    private lateinit var adapter: MovieAdapter
     private var loadingMore = false
 
     override fun onCreateView(
@@ -38,32 +38,36 @@ class UpcomingFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-//        adapter = MovieAdapter(listOf(), this@UpcomingFragment)
-//        binding.rvData.adapter = adapter
-//        binding.rvData.layoutManager = LinearLayoutManager(requireContext())
-//        if(viewModel.listLoadedMovies.isNotEmpty()) {
-//            adapter.addData(viewModel.listLoadedMovies)
-//            binding.rvData.scrollToPosition(viewModel.lastPositionAdapter)
-//            binding.mainShimmer.apply {
-//                stopShimmer()
-//                visibility = View.GONE
-//            }
-//            binding.rvData.visibility = View.VISIBLE
-//        }
-        binding.rvData.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        adapter = MovieAdapter(
+            items = listOf(),
+            onClickFavorite =  { viewModel.insertDeleteFavorite(it) },
+            onClickMovies = { }
+        )
+        rvData.adapter = adapter
+        rvData.layoutManager = LinearLayoutManager(requireContext())
+        if(viewModel.listLoadedMovies.isNotEmpty()) {
+            adapter.addData(viewModel.listLoadedMovies)
+            rvData.scrollToPosition(viewModel.lastPositionAdapter)
+            mainShimmer.apply {
+                stopShimmer()
+                visibility = View.GONE
+            }
+            rvData.visibility = View.VISIBLE
+        }
+        rvData.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val layoutManager = binding.rvData.layoutManager as LinearLayoutManager
-//                if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1){
-//                    if (!loadingMore) {
-//                        binding.progressBar.visibility = View.VISIBLE
-//                        viewModel.getMovies()
-//                    }
-//                }
+                val layoutManager = rvData.layoutManager as LinearLayoutManager
+                if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.itemCount - 1){
+                    if (!loadingMore) {
+                        progressBar.visibility = View.VISIBLE
+                        viewModel.getMovies()
+                    }
+                }
             }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -77,38 +81,41 @@ class UpcomingFragment : Fragment() {
         observer()
     }
 
-    private fun observer(){
-//        viewModelMovie.favorite.observe(viewLifecycleOwner){
-//            adapter.setFavorite(it)
-//        }
-//
-//        viewModelMovie.genres.observe(viewLifecycleOwner){
-//            adapter.setGenre(it)
-//        }
+    private fun observer() = with(viewModel) {
+        genres.observe(viewLifecycleOwner) {
+            adapter.setGenre(it)
+            getMovies()
+        }
+
+        favorit.observe(viewLifecycleOwner) {
+            adapter.setFavorite(it)
+        }
 
         viewModel.movies.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
-//                    if(adapter.itemCount == 0) {
-//                        binding.mainShimmer.apply {
-//                            stopShimmer()
-//                            visibility = View.GONE
-//                            binding.rvData.visibility = View.VISIBLE
-//                            adapter.addData(it.data!!)
-//                        }
-//                    }else{
-//                        binding.progressBar.visibility = View.GONE
-//                        adapter.addData(it.data!!)
-//                        binding.rvData.scrollToPosition(viewModel.lastPositionAdapter)
-//                    }
+                    binding.apply {
+                        if(adapter.itemCount == 0) {
+                            mainShimmer.apply {
+                                stopShimmer()
+                                visibility = View.GONE
+                                rvData.visibility = View.VISIBLE
+                                adapter.addData(it.data!!)
+                            }
+                        }else{
+                            progressBar.visibility = View.GONE
+                            adapter.addData(it.data!!)
+                            rvData.scrollToPosition(viewModel.lastPositionAdapter)
+                        }
+                    }
                 }
                 Status.LOADING -> {
-//                    if(adapter.itemCount == 0) {
-//                        binding.mainShimmer.apply {
-//                            startShimmer()
-//                            visibility = View.VISIBLE
-//                        }
-//                    }
+                    if(adapter.itemCount == 0) {
+                        binding.mainShimmer.apply {
+                            startShimmer()
+                            visibility = View.VISIBLE
+                        }
+                    }
                 }
                 Status.ERROR -> {
                     binding.mainShimmer.apply {

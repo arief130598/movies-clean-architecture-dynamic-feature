@@ -5,8 +5,8 @@ import com.aplus.domain.repository.remote.ApiMovieRepository
 import javax.inject.Inject
 import retrofit2.Response
 
-class GetPopular @Inject constructor(
+class GetNowPlayingApi @Inject constructor(
     private val repository: ApiMovieRepository
 ) {
-    suspend operator fun invoke(apiKey: String, page: Int) : Response<MoviesResponse> = repository.getPopular(apiKey, page)
+    suspend operator fun invoke(page: Int) : Response<MoviesResponse> = repository.getNowPlaying(page)
 }
