@@ -48,8 +48,8 @@ interface ApiMovieDB {
 
     @GET("movie/{movie_id}/similar")
     suspend fun getSimilar(
-        @Query("api_key") api: String = api_key,
         @Path("movie_id") movie_id: Int,
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("api_key") api: String = api_key
     ): Response<MoviesResponse>
 }

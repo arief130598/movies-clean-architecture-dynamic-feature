@@ -11,6 +11,7 @@ import com.aplus.core.extensions.hide
 import com.aplus.core.extensions.remove
 import com.aplus.core.extensions.show
 import com.aplus.movies.R
+import com.aplus.feature.detail.R as resourceDetail
 import com.aplus.movies.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(setOf(R.id.popularFragment, R.id.nowPlayingFragment, R.id.upcomingFragment))
         binding.topAppBar.setupWithNavController(navController, appBarConfiguration)
         binding.navBottom.setupWithNavController(navController)
-
         binding.topAppBar.setOnMenuItemClickListener {
             it.onNavDestinationSelected(navController)
             true
@@ -49,6 +49,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.searchFragment -> {
                     binding.topAppBar.remove()
                     binding.navBottom.hide()
+                }
+                resourceDetail.id.detailFragment -> {
+                    binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = false
+                    binding.topAppBar.menu.findItem(R.id.searchFragment).isVisible = false
+                    binding.topAppBar.show()
+                    binding.navBottom.remove()
                 }
                 else -> {
                     binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = true

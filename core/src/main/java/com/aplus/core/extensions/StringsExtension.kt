@@ -15,3 +15,14 @@ fun String.isNumeric(): Boolean {
     return matches(p)
 }
 
+fun String.removeFirst(): String {
+    return substring(1, this.length)
+}
+
+fun String.removeLast(): String {
+    return substring(0, this.length-1)
+}
+
+fun String.removeFirstAndLast(): String {
+    return substring(1, this.length-1)
+}

@@ -299,7 +299,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/dim8"
-                        android:layout_marginTop="@dimen/dim4"
+                        android:layout_marginTop="@dimen/dim12"
                         android:fontFamily="@font/roboto"
                         android:textAlignment="textStart"
                         android:textColor="@color/gray"

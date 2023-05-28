@@ -1,6 +1,5 @@
 package com.aplus.feature.detail.presentation.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,22 +9,24 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.aplus.core.extensions.deserialize
+import com.aplus.core.extensions.removeFirstAndLast
 import com.aplus.core.utils.Status
 import com.aplus.domain.model.Movies
 import com.aplus.feature.detail.R
-import com.aplus.common.R as RCommon
 import com.aplus.feature.detail.databinding.FragmentDetailBinding
 import com.aplus.feature.detail.presentation.adapter.SimilarAdapter
 import com.aplus.feature.detail.presentation.viewmodel.DetailViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import com.aplus.common.R as resourceCommon
+
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
 
     private lateinit var binding: FragmentDetailBinding
     private val viewModel : DetailViewModel by viewModels()
-//    private val viewModelMovie : MovieViewModel by viewModels()
     private lateinit var adapter: SimilarAdapter
 
     override fun onCreateView(
@@ -48,89 +49,95 @@ class DetailFragment : Fragment() {
         binding.rvData.adapter = adapter
         binding.rvData.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
-//        setupUI(DetailFragmentArgs.fromBundle(requireArguments()).movies)
-        observer()
+        val moviesArgs = DetailFragmentArgs.fromBundle(requireArguments()).moviesArg
+        val movies = moviesArgs.removeFirstAndLast().deserialize<Movies>()
+        setupUI(movies!!)
+        observer(movies)
     }
 
-    fun setupUI(item: Movies){
-        if(!item.backdrop_path.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(this.getString(R.string.background_image_url) + item.backdrop_path)
-                .error(RCommon.drawable.no_image)
-                .into(binding.backgroundPoster)
+    fun setupUI(item: Movies) = with(binding) {
+        if (!item.backdrop_path.isNullOrEmpty()) {
+            Glide.with(requireContext())
+                .load(requireContext().getString(R.string.background_image_url) + item.backdrop_path)
+                .error(resourceCommon.drawable.no_image)
+                .into(backgroundPoster)
         }
-        if(!item.poster_path.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(this.getString(RCommon.string.image_url) + item.poster_path)
-                .error(RCommon.drawable.no_image)
-                .into(binding.poster)
+        if (!item.poster_path.isNullOrEmpty()) {
+            Glide.with(requireContext())
+                .load(requireContext().getString(resourceCommon.string.image_url) + item.poster_path)
+                .error(resourceCommon.drawable.no_image)
+                .into(poster)
         }
-        binding.title.text = item.title
-        binding.release.text = item.release_date
-        binding.popularity.text = item.popularity.toString()
-        binding.rating.text = item.vote_average.toString()
-        binding.ratingTotal.text = item.vote_count.toString()
-        binding.language.text = item.original_language
-        binding.overview.text = item.overview
-//        binding.genres.text = "Genres : ${convertGenres(item.genre_ids)}"
-
-//        if(viewModelMovie.favorite.value!!.any { it.id == item.id }){
-//            binding.favorite.setImageResource(RCore.drawable.ic_favorite_32)
-//        }else{
-//            binding.favorite.setImageResource(RCore.drawable.ic_favorite_border_32)
-//        }
-//        binding.favorite.setOnClickListener {
-//            if(viewModelMovie.favorite.value!!.any { it.id == item.id }){
-//                binding.favorite.setImageResource(RCore.drawable.ic_favorite_border_32)
-//                (requireActivity() as MainActivity).deleteFavorite(item)
-//            }else{
-//                binding.favorite.setImageResource(RCore.drawable.ic_favorite_32)
-//                (requireActivity() as MainActivity).insertFavorite(item)
-//            }
-//        }
+        title.text = item.title
+        release.text = item.release_date
+        popularity.text = item.popularity.toString()
+        rating.text = item.vote_average.toString()
+        ratingTotal.text = item.vote_count.toString()
+        language.text = item.original_language
+        overview.text = item.overview
 
         viewModel.getSimilar(item.id)
     }
 
-//    private fun convertGenres(data: List<Int>): String{
-//        var genres = ""
-//        return if(data.isNotEmpty()) {
-//            data.forEach {
-//                val item = viewModelMovie.genres.value!!.filter { x -> x.id == it }
-//                if (item.isNotEmpty()) {
-//                    genres += "${item[0].name}, "
-//                }
-//            }
-//            if(genres.length > 2) {
-//                genres.substring(0, genres.length-2)
-//            }else{
-//                genres
-//            }
-//        }else{
-//            genres
-//        }
-//    }
+    private fun convertGenres(data: List<Int>): String{
+        var genres = ""
+        return if(data.isNotEmpty()) {
+            data.forEach {
+                val item = viewModel.genres.value!!.filter { x -> x.id == it }
+                if (item.isNotEmpty()) {
+                    genres += "${item[0].name}, "
+                }
+            }
+            if(genres.length > 2) {
+                genres.substring(0, genres.length-2)
+            }else{
+                genres
+            }
+        }else{
+            genres
+        }
+    }
 
-    private fun observer(){
+    private fun observer(item: Movies) = with(binding) {
+        viewModel.genres.observe(viewLifecycleOwner) {
+            genres.text = "Genres : ${convertGenres(item.genre_ids)}"
+        }
+
+        viewModel.favorit.observe(viewLifecycleOwner) {
+            if(viewModel.favorit.value!!.any { it.id == item.id }){
+                favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
+            }else{
+                favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
+            }
+            favorite.setOnClickListener {
+                if(viewModel.favorit.value!!.any { it.id == item.id }){
+                    favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
+                }else{
+                    favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
+                }
+                viewModel.insertDeleteFavorite(item)
+            }
+        }
+
         viewModel.movies.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
-                    binding.mainShimmer.apply {
+                    mainShimmer.apply {
                         stopShimmer()
                         visibility = View.GONE
-                        binding.rvData.visibility = View.VISIBLE
+                        rvData.visibility = View.VISIBLE
                         adapter.setData(it.data!!)
                     }
                 }
                 Status.LOADING -> {
-                    binding.mainShimmer.apply {
-                        binding.rvData.visibility = View.GONE
+                    mainShimmer.apply {
+                        rvData.visibility = View.GONE
                         startShimmer()
                         visibility = View.VISIBLE
                     }
                 }
                 Status.ERROR -> {
-                    binding.mainShimmer.apply {
+                    mainShimmer.apply {
                         stopShimmer()
                         visibility = View.GONE
                     }
@@ -138,20 +145,5 @@ class DetailFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-//        (requireActivity() as MainActivity).binding.topAppBar.visibility = View.VISIBLE
-//        (requireActivity() as MainActivity).binding.topAppBar.menu.findItem(RMain.id.favoriteFragment).isVisible = false
-//        (requireActivity() as MainActivity).binding.topAppBar.menu.findItem(RMain.id.searchFragment).isVisible = false
-//        (requireActivity() as MainActivity).binding.navBottom.visibility = View.GONE
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-//        (requireActivity() as MainActivity).binding.topAppBar.menu.findItem(RMain.id.favoriteFragment).isVisible = true
-//        (requireActivity() as MainActivity).binding.topAppBar.menu.findItem(RMain.id.searchFragment).isVisible = true
-//        (requireActivity() as MainActivity).binding.navBottom.visibility = View.VISIBLE
     }
 }

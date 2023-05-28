@@ -1,20 +1,28 @@
 package com.aplus.feature.home.presentation.ui
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aplus.common.presentation.adapter.MovieAdapter
+import com.aplus.core.extensions.serialize
 import com.aplus.core.utils.Status
+import com.aplus.domain.model.Movies
 import com.aplus.feature.home.R
 import com.aplus.feature.home.databinding.FragmentPopularBinding
 import com.aplus.feature.home.presentation.viewmodel.PopularViewModel
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,7 +52,13 @@ class PopularFragment : Fragment() {
         adapter = MovieAdapter(
             items = listOf(),
             onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
-            onClickMovies = { }
+            onClickMovies = {
+                val args = it.serialize()
+                val request = NavDeepLinkRequest.Builder
+                    .fromUri("aplus.com://movies/detail?movies={$args}".toUri())
+                    .build()
+                findNavController().navigate(request)
+            }
         )
         rvData.adapter = adapter
         rvData.layoutManager = LinearLayoutManager(requireContext())
