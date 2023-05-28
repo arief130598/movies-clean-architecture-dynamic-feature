@@ -23,8 +23,7 @@
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:title="Movies"
                 app:menu="@menu/top_menu"
-                style="@style/Widget.MaterialComponents.Toolbar.Primary"
-                />
+                style="@style/Widget.MaterialComponents.Toolbar.Primary" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -46,7 +45,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:navGraph="@navigation/nav_bottom" />
+                app:navGraph="@navigation/nav_main" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

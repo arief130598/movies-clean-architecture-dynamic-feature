@@ -14,6 +14,7 @@ import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class MovieViewModel(
     private val apiMovieUseCases: ApiMovieUseCases,
@@ -47,6 +48,12 @@ abstract class MovieViewModel(
                     apiMovieUseCases.getGenresApi().let {
                         if (it.isSuccessful) {
                             if(it.body() != null) {
+                                val genres = it.body()!!.genres
+                                if(genres.isNotEmpty()) {
+                                    withContext(Dispatchers.IO) {
+                                        genresUseCases.insertListGenres(genres)
+                                    }
+                                }
                                 _genres.postValue(it.body()!!.genres)
                             }
                         }

@@ -43,7 +43,7 @@ class UpcomingFragment : Fragment() {
 
         adapter = MovieAdapter(
             items = listOf(),
-            onClickFavorite =  { viewModel.insertDeleteFavorite(it) },
+            onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
             onClickMovies = { }
         )
         rvData.adapter = adapter

@@ -19,7 +19,7 @@ import javax.inject.Inject
  */
 class MovieAdapter @Inject constructor(
     private var items: List<Movies>,
-    private val onClickFavorite: (Movies) -> Unit,
+    private val onClickFavorite: (Movies, Int) -> Unit,
     private val onClickMovies: (Movies) -> Unit
 ) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
@@ -34,12 +34,13 @@ class MovieAdapter @Inject constructor(
 
     override fun getItemCount(): Int = items.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position], position)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) =
+        holder.bind(holder, items[position])
 
     inner class ViewHolder(val binding: RvMoviesBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Movies, position: Int) = with(binding) {
-            if(!item.poster_path.isNullOrEmpty()) {
+        fun bind(holder: ViewHolder, item: Movies) = with(binding) {
+            if (!item.poster_path.isNullOrEmpty()) {
                 Glide.with(itemView.context)
                     .load(itemView.context.getString(R.string.image_url) + item.poster_path)
                     .error(R.drawable.no_image)
@@ -49,76 +50,79 @@ class MovieAdapter @Inject constructor(
             rating.text = item.vote_average.toString()
             overview.text = limitOverview(item.overview)
             genres.text = convertGenres(item.genre_ids)
-            if(listFavorite.any { it.id == item.id }){
+            if (listFavorite.any { it.id == item.id }) {
                 favorite.setImageResource(R.drawable.ic_favorite_32)
-            }else{
+            } else {
                 favorite.setImageResource(R.drawable.ic_favorite_border_32)
             }
-            favorite.setOnClickListener{
-                if(listFavorite.any { it.id == item.id }){
+            favorite.setOnClickListener {
+                if (listFavorite.any { it.id == item.id }) {
                     favorite.setImageResource(R.drawable.ic_favorite_border_32)
-                }else{
+                } else {
                     favorite.setImageResource(R.drawable.ic_favorite_32)
                 }
-                onClickFavorite(item) 
+                onClickFavorite(item, holder.adapterPosition)
             }
             mainCard.setOnClickListener { onClickMovies(item) }
             executePendingBindings()
         }
     }
 
-    fun addData(data : List<Movies>){
+    fun addData(data: List<Movies>) {
         val lastPosition = this.items.size
         this.items += data
-        notifyItemRangeInserted(lastPosition, this.items.size-1)
+        notifyItemRangeInserted(lastPosition, this.items.size - 1)
     }
 
-    fun setGenre(data : List<Genres>){
+    fun clearData() {
+        val size = this.items.size
+        this.items = listOf()
+        notifyItemRangeRemoved(0, size)
+    }
+
+    fun removeData(movies: Movies, position: Int) {
+        listFavorite.removeIf { it.id == movies.id }
+        this.items = this.items.filter { it.id != movies.id }
+        notifyItemRemoved(position)
+    }
+
+    fun setGenre(data: List<Genres>) {
         this.listGenres = data
     }
 
-    fun setFavorite(data : List<Movies>){
+    fun setFavorite(data: List<Movies>) {
         this.listFavorite = data as MutableList<Movies>
     }
 
-    fun changeFavorite(movies: Movies, position: Int){
-        if(listFavorite.contains(movies)){
-            listFavorite.remove(movies)
-        }else{
-            listFavorite.add(movies)
-        }
-        notifyItemChanged(position)
-    }
-    
-    fun limitOverview(data: String): String{
-        return if(data.length > 100) {
+    fun limitOverview(data: String): String {
+        return if (data.length > 100) {
             var overview = data.substring(0, 100)
             if (overview[overview.length - 1] != '.') {
                 overview = "$overview..."
             }
             overview
-        }else{
+        } else {
             data
         }
     }
-    
-    fun convertGenres(data: List<Int>): String{
+
+    fun convertGenres(data: List<Int>): String {
         var genres = ""
-        return if(data.isNotEmpty()) {
+        return if (data.isNotEmpty()) {
             data.forEach {
                 val item = this.listGenres.filter { x -> x.id == it }
                 genres += if (item.isNotEmpty()) {
                     "${item[0].name}, "
-                }else{
+                } else {
                     "${it}, "
                 }
             }
-            if(genres.length > 2) {
-                genres.substring(0, genres.length-2)
-            }else{
+            if (genres.length > 2) {
+                genres.substring(0, genres.length - 2)
+            } else {
                 genres
             }
-        }else{
+        } else {
             genres
         }
     }

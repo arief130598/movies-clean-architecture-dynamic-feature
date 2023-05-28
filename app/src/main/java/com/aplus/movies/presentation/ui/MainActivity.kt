@@ -7,6 +7,9 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.aplus.core.extensions.hide
+import com.aplus.core.extensions.remove
+import com.aplus.core.extensions.show
 import com.aplus.movies.R
 import com.aplus.movies.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -14,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +36,27 @@ class MainActivity : AppCompatActivity() {
         binding.topAppBar.setOnMenuItemClickListener {
             it.onNavDestinationSelected(navController)
             true
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.favoriteFragment -> {
+                    binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = false
+                    binding.topAppBar.menu.findItem(R.id.searchFragment).isVisible = true
+                    binding.topAppBar.show()
+                    binding.navBottom.hide()
+                }
+                R.id.searchFragment -> {
+                    binding.topAppBar.remove()
+                    binding.navBottom.hide()
+                }
+                else -> {
+                    binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = true
+                    binding.topAppBar.menu.findItem(R.id.searchFragment).isVisible = true
+                    binding.topAppBar.show()
+                    binding.navBottom.show()
+                }
+            }
         }
     }
 }
