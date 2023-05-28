@@ -1,7 +1,6 @@
 package com.aplus.data.datasource.remote
 
-import com.aplus.core.utils.KeyConstant
-import com.aplus.core.utils.KeyConstant.api_key
+import com.aplus.core.constants.KeyConstant.API_KEY
 import com.aplus.domain.model.GenresResponse
 import com.aplus.domain.model.MoviesResponse
 import retrofit2.Response
@@ -18,30 +17,30 @@ interface ApiMovieDB {
 
     @GET("genre/movie/list")
     suspend fun getGenres(
-        @Query("api_key") api: String = api_key
+        @Query("api_key") api: String = API_KEY
     ): Response<GenresResponse>
 
     @GET("movie/popular")
     suspend fun getPopular(
-        @Query("api_key") api: String = api_key,
+        @Query("api_key") api: String = API_KEY,
         @Query("page") page: Int,
     ): Response<MoviesResponse>
 
     @GET("movie/now_playing")
     suspend fun getNowPlaying(
-        @Query("api_key") api: String = api_key,
+        @Query("api_key") api: String = API_KEY,
         @Query("page") page: Int
     ): Response<MoviesResponse>
 
     @GET("movie/upcoming")
     suspend fun getUpcoming(
-        @Query("api_key") api: String = api_key,
+        @Query("api_key") api: String = API_KEY,
         @Query("page") page: Int
     ): Response<MoviesResponse>
 
     @GET("search/movie")
     suspend fun getSearch(
-        @Query("api_key") api: String = api_key,
+        @Query("api_key") api: String = API_KEY,
         @Query("query") query: String,
         @Query("page") page: Int
     ): Response<MoviesResponse>
@@ -50,6 +49,6 @@ interface ApiMovieDB {
     suspend fun getSimilar(
         @Path("movie_id") movie_id: Int,
         @Query("page") page: Int,
-        @Query("api_key") api: String = api_key
+        @Query("api_key") api: String = API_KEY
     ): Response<MoviesResponse>
 }
