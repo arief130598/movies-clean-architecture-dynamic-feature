@@ -2,7 +2,6 @@ package com.aplus.feature.search.presentation.ui
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.aplus.common.presentation.adapter.MovieAdapter
 import com.aplus.core.utils.Status
 import com.aplus.feature.search.R
 import com.aplus.feature.search.databinding.FragmentSearchBinding
@@ -27,8 +27,7 @@ class SearchFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
     private val viewModel : SearchViewModel by viewModels()
-//    private val viewModelMovie : MovieViewModel by viewModels()
-//    private lateinit var adapter: MovieAdapter
+    private lateinit var adapter: MovieAdapter
     private var loadingMore = false
 
     override fun onCreateView(
@@ -44,20 +43,20 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.ivBack.setOnClickListener { findNavController().popBackStack() }
-        if(binding.searchText.requestFocus()) {
+        ivBack.setOnClickListener { findNavController().popBackStack() }
+        if(searchText.requestFocus()) {
             val imm =
                 requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.searchText, 0)
+            imm.showSoftInput(searchText, 0)
         }
 
         var timer = Timer()
         val delayTime = 1000L
 
-        binding.searchText.addTextChangedListener {
+        searchText.addTextChangedListener {
             timer.cancel()
             timer = Timer()
             timer.schedule(
@@ -65,11 +64,10 @@ class SearchFragment : Fragment() {
                     override fun run() {
                         requireActivity().runOnUiThread {
                             loadingMore = true
-//                            adapter.clearData()
+                            adapter.clearData()
                             viewModel.page = 0
                             viewModel.listLoadedMovies.clear()
                             if (it.toString().isNotEmpty()) {
-                                Log.d("Arief", "1")
                                 viewModel.getMovies(it.toString())
                             }
                         }
@@ -80,27 +78,30 @@ class SearchFragment : Fragment() {
             )
         }
 
-//        adapter = MovieAdapter(listOf(), this@SearchFragment)
-//        binding.rvData.adapter = adapter
-//        binding.rvData.layoutManager = LinearLayoutManager(requireContext())
-//        if(viewModel.listLoadedMovies.isNotEmpty()) {
-//            adapter.addData(viewModel.listLoadedMovies)
-//            binding.mainShimmer.apply {
-//                stopShimmer()
-//                visibility = View.GONE
-//            }
-//            binding.rvData.visibility = View.VISIBLE
-//        }
-        binding.mainNestedScroll.setOnScrollChangeListener { v: NestedScrollView, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+        adapter = MovieAdapter(
+            items = listOf(),
+            onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
+            onClickMovies = { }
+        )
+        rvData.adapter = adapter
+        rvData.layoutManager = LinearLayoutManager(requireContext())
+        if(viewModel.listLoadedMovies.isNotEmpty()) {
+            adapter.addData(viewModel.listLoadedMovies)
+            mainShimmer.apply {
+                stopShimmer()
+                visibility = View.GONE
+            }
+            rvData.visibility = View.VISIBLE
+        }
+        mainNestedScroll.setOnScrollChangeListener { v: NestedScrollView, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
             if (v.getChildAt(v.childCount - 1) != null) {
                 if (scrollY >= v.getChildAt(v.childCount - 1)
                         .measuredHeight - v.measuredHeight &&
                     scrollY > oldScrollY
                 ) {
                     if (!loadingMore) {
-                        Log.d("Arief", "2")
-                        binding.progressBar.visibility = View.VISIBLE
-                        viewModel.getMovies(binding.searchText.text.toString())
+                        progressBar.visibility = View.VISIBLE
+                        viewModel.getMovies(searchText.text.toString())
                     }
                 }
             }
@@ -109,38 +110,40 @@ class SearchFragment : Fragment() {
         observer()
     }
 
-    private fun observer(){
-//        viewModelMovie.favorite.observe(viewLifecycleOwner){
-//            adapter.setFavorite(it)
-//        }
-//
-//        viewModelMovie.genres.observe(viewLifecycleOwner){
-//            adapter.setGenre(it)
-//        }
+    private fun observer() = with(viewModel) {
+        genres.observe(viewLifecycleOwner) {
+            adapter.setGenre(it)
+        }
 
-        viewModel.movies.observe(viewLifecycleOwner) {
+        favorit.observe(viewLifecycleOwner) {
+            adapter.setFavorite(it)
+        }
+
+        movies.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
-//                    if(adapter.itemCount == 0) {
-//                        binding.mainShimmer.apply {
-//                            stopShimmer()
-//                            visibility = View.GONE
-//                            binding.rvData.visibility = View.VISIBLE
-//                            adapter.addData(it.data!!)
-//                            loadingMore = false
-//                        }
-//                    }else{
-//                        binding.progressBar.visibility = View.GONE
-//                        adapter.addData(it.data!!)
-//                    }
+                    binding.apply {
+                        if(adapter.itemCount == 0) {
+                            mainShimmer.apply {
+                                stopShimmer()
+                                visibility = View.GONE
+                                rvData.visibility = View.VISIBLE
+                                adapter.addData(it.data!!)
+                                loadingMore = false
+                            }
+                        }else{
+                            progressBar.visibility = View.GONE
+                            adapter.addData(it.data!!)
+                        }
+                    }
                 }
                 Status.LOADING -> {
-//                    if(adapter.itemCount == 0) {
-//                        binding.mainShimmer.apply {
-//                            startShimmer()
-//                            visibility = View.VISIBLE
-//                        }
-//                    }
+                    if(adapter.itemCount == 0) {
+                        binding.mainShimmer.apply {
+                            startShimmer()
+                            visibility = View.VISIBLE
+                        }
+                    }
                 }
                 Status.ERROR -> {
                     binding.mainShimmer.apply {
@@ -152,28 +155,4 @@ class SearchFragment : Fragment() {
             }
         }
     }
-
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        (requireActivity() as MainActivity).binding.topAppBar.visibility = View.GONE
-//        (requireActivity() as MainActivity).binding.navBottom.visibility = View.GONE
-//    }
-//
-//    override fun onDetach() {
-//        super.onDetach()
-//        (requireActivity() as MainActivity).binding.topAppBar.visibility = View.VISIBLE
-//        (requireActivity() as MainActivity).binding.navBottom.visibility = View.VISIBLE
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        (requireActivity() as MainActivity).binding.topAppBar.visibility = View.GONE
-//        (requireActivity() as MainActivity).binding.navBottom.visibility = View.GONE
-//    }
-//
-//    override fun onPause() {
-//        super.onPause()
-//        (requireActivity() as MainActivity).binding.topAppBar.visibility = View.VISIBLE
-//        (requireActivity() as MainActivity).binding.navBottom.visibility = View.VISIBLE
-//    }
 }

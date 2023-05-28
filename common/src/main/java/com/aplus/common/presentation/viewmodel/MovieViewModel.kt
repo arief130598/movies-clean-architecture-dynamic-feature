@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aplus.core.utils.NetworkHelper
 import com.aplus.core.utils.Resource
 import com.aplus.domain.model.Genres
 import com.aplus.domain.model.Movies
@@ -28,7 +27,7 @@ abstract class MovieViewModel(
     private val _favorit = MutableLiveData<List<Movies>>()
     val favorit: LiveData<List<Movies>> = _favorit
 
-    protected var page = 0
+    var page = 0
     var lastPositionAdapter = 0
     var listLoadedMovies: MutableList<Movies> = mutableListOf()
 
@@ -71,7 +70,9 @@ abstract class MovieViewModel(
 
     fun insertDeleteFavorite(movies: Movies) {
         viewModelScope.launch(Dispatchers.IO) {
-            if(_favorit.value!!.contains(movies)) moviesUseCases.deleteSingleMovies(movies.id)
+            if (_favorit.value!!.any { it.id == movies.id }) moviesUseCases.deleteSingleMovies(
+                movies.id
+            )
             else moviesUseCases.insertSingleMovies(movies)
         }
     }
