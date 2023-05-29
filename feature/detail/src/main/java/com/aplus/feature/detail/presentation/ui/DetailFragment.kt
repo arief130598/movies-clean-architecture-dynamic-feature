@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aplus.core.extensions.deserialize
 import com.aplus.core.extensions.removeFirstAndLast
@@ -19,6 +20,8 @@ import com.aplus.feature.detail.presentation.adapter.SimilarAdapter
 import com.aplus.feature.detail.presentation.viewmodel.DetailViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import com.aplus.common.R as resourceCommon
 
 
@@ -99,49 +102,51 @@ class DetailFragment : Fragment() {
     }
 
     private fun observer(item: Movies) = with(binding) {
-        viewModel.genres.observe(viewLifecycleOwner) {
-            genres.text = "Genres : ${convertGenres(item.genre_ids)}"
-        }
-
-        viewModel.favorit.observe(viewLifecycleOwner) {
-            if(viewModel.favorit.value!!.any { it.id == item.id }){
-                favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
-            }else{
-                favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
+        lifecycleScope.launch{
+            viewModel.genres.collectLatest {
+                genres.text = "Genres : ${convertGenres(item.genre_ids)}"
             }
-            favorite.setOnClickListener {
+
+            viewModel.favorit.collectLatest {
                 if(viewModel.favorit.value!!.any { it.id == item.id }){
-                    favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
-                }else{
                     favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
+                }else{
+                    favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
                 }
-                viewModel.insertDeleteFavorite(item)
+                favorite.setOnClickListener {
+                    if(viewModel.favorit.value!!.any { it.id == item.id }){
+                        favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
+                    }else{
+                        favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
+                    }
+                    viewModel.insertDeleteFavorite(item)
+                }
             }
-        }
 
-        viewModel.movies.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    mainShimmer.apply {
-                        stopShimmer()
-                        visibility = View.GONE
-                        rvData.visibility = View.VISIBLE
-                        adapter.setData(it.data!!)
+            viewModel.movies.collectLatest {
+                when (it!!.status) {
+                    Status.SUCCESS -> {
+                        mainShimmer.apply {
+                            stopShimmer()
+                            visibility = View.GONE
+                            rvData.visibility = View.VISIBLE
+                            adapter.setData(it.data!!)
+                        }
                     }
-                }
-                Status.LOADING -> {
-                    mainShimmer.apply {
-                        rvData.visibility = View.GONE
-                        startShimmer()
-                        visibility = View.VISIBLE
+                    Status.LOADING -> {
+                        mainShimmer.apply {
+                            rvData.visibility = View.GONE
+                            startShimmer()
+                            visibility = View.VISIBLE
+                        }
                     }
-                }
-                Status.ERROR -> {
-                    mainShimmer.apply {
-                        stopShimmer()
-                        visibility = View.GONE
+                    Status.ERROR -> {
+                        mainShimmer.apply {
+                            stopShimmer()
+                            visibility = View.GONE
+                        }
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     }
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                 }
             }
         }

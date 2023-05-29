@@ -12,6 +12,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aplus.common.presentation.adapter.MovieAdapter
@@ -21,6 +22,8 @@ import com.aplus.feature.search.databinding.FragmentSearchBinding
 import com.aplus.feature.search.presentation.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
@@ -43,7 +46,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
         ivBack.setOnClickListener { findNavController().popBackStack() }
@@ -111,46 +114,48 @@ class SearchFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        genres.observe(viewLifecycleOwner) {
-            adapter.setGenre(it)
-        }
+        lifecycleScope.launch{
+            genres.collectLatest {
+                adapter.setGenre(it)
+            }
 
-        favorit.observe(viewLifecycleOwner) {
-            adapter.setFavorite(it)
-        }
+            favorit.collectLatest {
+                adapter.setFavorite(it)
+            }
 
-        movies.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    binding.apply {
-                        if(adapter.itemCount == 0) {
-                            mainShimmer.apply {
-                                stopShimmer()
-                                visibility = View.GONE
-                                rvData.visibility = View.VISIBLE
+            movies.collectLatest {
+                when (it!!.status) {
+                    Status.SUCCESS -> {
+                        binding.apply {
+                            if(adapter.itemCount == 0) {
+                                mainShimmer.apply {
+                                    stopShimmer()
+                                    visibility = View.GONE
+                                    rvData.visibility = View.VISIBLE
+                                    adapter.addData(it.data!!)
+                                    loadingMore = false
+                                }
+                            }else{
+                                progressBar.visibility = View.GONE
                                 adapter.addData(it.data!!)
-                                loadingMore = false
                             }
-                        }else{
-                            progressBar.visibility = View.GONE
-                            adapter.addData(it.data!!)
                         }
                     }
-                }
-                Status.LOADING -> {
-                    if(adapter.itemCount == 0) {
+                    Status.LOADING -> {
+                        if(adapter.itemCount == 0) {
+                            binding.mainShimmer.apply {
+                                startShimmer()
+                                visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                    Status.ERROR -> {
                         binding.mainShimmer.apply {
-                            startShimmer()
-                            visibility = View.VISIBLE
+                            stopShimmer()
+                            visibility = View.GONE
                         }
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     }
-                }
-                Status.ERROR -> {
-                    binding.mainShimmer.apply {
-                        stopShimmer()
-                        visibility = View.GONE
-                    }
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                 }
             }
         }

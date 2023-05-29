@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aplus.common.presentation.adapter.MovieAdapter
@@ -16,6 +17,8 @@ import com.aplus.feature.home.R
 import com.aplus.feature.home.databinding.FragmentNowPlayingBinding
 import com.aplus.feature.home.presentation.viewmodel.NowPlayingViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NowPlayingFragment : Fragment() {
@@ -38,7 +41,7 @@ class NowPlayingFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding){
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding){
         super.onViewCreated(view, savedInstanceState)
 
         adapter = MovieAdapter(
@@ -82,47 +85,49 @@ class NowPlayingFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        genres.observe(viewLifecycleOwner) {
-            adapter.setGenre(it)
-            getMovies()
-        }
+        lifecycleScope.launch{
+            genres.collectLatest {
+                adapter.setGenre(it)
+                getMovies()
+            }
 
-        favorit.observe(viewLifecycleOwner) {
-            adapter.setFavorite(it)
-        }
+            favorit.collectLatest {
+                adapter.setFavorite(it)
+            }
 
-        movies.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    binding.apply {
-                        if(adapter.itemCount == 0) {
-                            mainShimmer.apply {
-                                stopShimmer()
-                                visibility = View.GONE
-                                rvData.visibility = View.VISIBLE
+            movies.collectLatest {
+                when (it!!.status) {
+                    Status.SUCCESS -> {
+                        binding.apply {
+                            if(adapter.itemCount == 0) {
+                                mainShimmer.apply {
+                                    stopShimmer()
+                                    visibility = View.GONE
+                                    rvData.visibility = View.VISIBLE
+                                    adapter.addData(it.data!!)
+                                }
+                            }else{
+                                progressBar.visibility = View.GONE
                                 adapter.addData(it.data!!)
+                                rvData.scrollToPosition(viewModel.lastPositionAdapter)
                             }
-                        }else{
-                            progressBar.visibility = View.GONE
-                            adapter.addData(it.data!!)
-                            rvData.scrollToPosition(viewModel.lastPositionAdapter)
                         }
                     }
-                }
-                Status.LOADING -> {
-                    if(adapter.itemCount == 0) {
+                    Status.LOADING -> {
+                        if(adapter.itemCount == 0) {
+                            binding.mainShimmer.apply {
+                                startShimmer()
+                                visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                    Status.ERROR -> {
                         binding.mainShimmer.apply {
-                            startShimmer()
-                            visibility = View.VISIBLE
+                            stopShimmer()
+                            visibility = View.GONE
                         }
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     }
-                }
-                Status.ERROR -> {
-                    binding.mainShimmer.apply {
-                        stopShimmer()
-                        visibility = View.GONE
-                    }
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                 }
             }
         }

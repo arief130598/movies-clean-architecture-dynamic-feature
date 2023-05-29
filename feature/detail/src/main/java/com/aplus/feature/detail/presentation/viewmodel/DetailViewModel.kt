@@ -31,7 +31,7 @@ class DetailViewModel @Inject constructor(
     fun getSimilar(movieId: Int){
         page += 1
         viewModelScope.launch {
-            _movies.postValue(Resource.loading(null))
+            _movies.emit(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 apiMovieUseCases.getSimilarApi(movieId, page).let {
                     if (it.isSuccessful) {
@@ -44,13 +44,13 @@ class DetailViewModel @Inject constructor(
                                     break
                                 }
                             }
-                            _movies.postValue(Resource.success(data))
+                            _movies.emit(Resource.success(data))
                         }else{
-                            _movies.postValue(Resource.success(listOf()))
+                            _movies.emit(Resource.success(listOf()))
                         }
-                    } else _movies.postValue(Resource.error(it.errorBody().toString(), null))
+                    } else _movies.emit(Resource.error(it.errorBody().toString(), null))
                 }
-            } else _movies.postValue(Resource.error("No internet connection", null))
+            } else _movies.emit(Resource.error("No internet connection", null))
         }
     }
 }
