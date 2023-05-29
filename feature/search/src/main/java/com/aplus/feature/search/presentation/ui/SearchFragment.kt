@@ -15,18 +15,25 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aplus.common.presentation.adapter.MovieAdapter
+import com.aplus.core.constants.DeeplinkConstant
+import com.aplus.core.constants.KeyConstant
+import com.aplus.core.extensions.collectLatestLifecycleFlow
+import com.aplus.core.extensions.serialize
+import com.aplus.core.utils.NavigationHelper
 import com.aplus.core.utils.Status
 import com.aplus.feature.search.R
 import com.aplus.feature.search.databinding.FragmentSearchBinding
 import com.aplus.feature.search.presentation.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
     private val viewModel : SearchViewModel by viewModels()
+    @Inject lateinit var nav: NavigationHelper
     private lateinit var adapter: MovieAdapter
     private var loadingMore = false
 
@@ -43,7 +50,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
         ivBack.setOnClickListener { findNavController().popBackStack() }
@@ -81,7 +88,14 @@ class SearchFragment : Fragment() {
         adapter = MovieAdapter(
             items = listOf(),
             onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
-            onClickMovies = { }
+            onClickMovies = {
+                val args = it.serialize()
+                nav.navigateDeeplink(
+                    this@SearchFragment,
+                    DeeplinkConstant.DETAIL_NAVIGATION,
+                    Pair(KeyConstant.MOVIES_KEY, args)
+                )
+            }
         )
         rvData.adapter = adapter
         rvData.layoutManager = LinearLayoutManager(requireContext())
@@ -111,15 +125,13 @@ class SearchFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        genres.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(genres){
             adapter.setGenre(it)
         }
-
-        favorit.observe(viewLifecycleOwner) {
-            adapter.setFavorite(it)
+        collectLatestLifecycleFlow(favorit){
+            if(it.isNotEmpty()) adapter.setFavorite(it)
         }
-
-        movies.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(movies){
             when (it.status) {
                 Status.SUCCESS -> {
                     binding.apply {

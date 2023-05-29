@@ -11,17 +11,24 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aplus.common.presentation.adapter.MovieAdapter
+import com.aplus.core.constants.DeeplinkConstant
+import com.aplus.core.constants.KeyConstant
+import com.aplus.core.extensions.collectLatestLifecycleFlow
+import com.aplus.core.extensions.serialize
+import com.aplus.core.utils.NavigationHelper
 import com.aplus.core.utils.Status
 import com.aplus.feature.home.R
 import com.aplus.feature.home.databinding.FragmentNowPlayingBinding
 import com.aplus.feature.home.presentation.viewmodel.NowPlayingViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NowPlayingFragment : Fragment() {
 
     private lateinit var binding: FragmentNowPlayingBinding
     private val viewModel : NowPlayingViewModel by viewModels()
+    @Inject lateinit var nav: NavigationHelper
     private lateinit var adapter: MovieAdapter
     private var loadingMore = false
 
@@ -38,13 +45,20 @@ class NowPlayingFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding){
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding){
         super.onViewCreated(view, savedInstanceState)
 
         adapter = MovieAdapter(
             items = listOf(),
             onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
-            onClickMovies = { }
+            onClickMovies = {
+                val args = it.serialize()
+                nav.navigateDeeplink(
+                    this@NowPlayingFragment,
+                    DeeplinkConstant.DETAIL_NAVIGATION,
+                    Pair(KeyConstant.MOVIES_KEY, args)
+                )
+            }
         )
         rvData.adapter = adapter
         rvData.layoutManager = LinearLayoutManager(requireContext())
@@ -82,16 +96,15 @@ class NowPlayingFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        genres.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(genres){
             adapter.setGenre(it)
             getMovies()
         }
-
-        favorit.observe(viewLifecycleOwner) {
-            adapter.setFavorite(it)
+        collectLatestLifecycleFlow(favorit){
+            if(it.isNotEmpty()) adapter.setFavorite(it)
         }
 
-        movies.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(movies){
             when (it.status) {
                 Status.SUCCESS -> {
                     binding.apply {

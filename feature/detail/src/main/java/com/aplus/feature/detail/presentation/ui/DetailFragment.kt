@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.aplus.core.extensions.collectLatestLifecycleFlow
 import com.aplus.core.extensions.deserialize
 import com.aplus.core.extensions.removeFirstAndLast
 import com.aplus.core.utils.Status
@@ -83,7 +84,7 @@ class DetailFragment : Fragment() {
         var genres = ""
         return if(data.isNotEmpty()) {
             data.forEach {
-                val item = viewModel.genres.value!!.filter { x -> x.id == it }
+                val item = viewModel.genres.value.filter { x -> x.id == it }
                 if (item.isNotEmpty()) {
                     genres += "${item[0].name}, "
                 }
@@ -99,28 +100,26 @@ class DetailFragment : Fragment() {
     }
 
     private fun observer(item: Movies) = with(binding) {
-        viewModel.genres.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(viewModel.genres){
             genres.text = "Genres : ${convertGenres(item.genre_ids)}"
         }
-
-        viewModel.favorit.observe(viewLifecycleOwner) {
-            if(viewModel.favorit.value!!.any { it.id == item.id }){
+        collectLatestLifecycleFlow(viewModel.favorit){
+            if(viewModel.favorit.value.any { it.id == item.id }){
                 favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
             }else{
                 favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
             }
             favorite.setOnClickListener {
-                if(viewModel.favorit.value!!.any { it.id == item.id }){
-                    favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
-                }else{
+                if(viewModel.favorit.value.any { it.id == item.id }){
                     favorite.setImageResource(resourceCommon.drawable.ic_favorite_32)
+                }else{
+                    favorite.setImageResource(resourceCommon.drawable.ic_favorite_border_32)
                 }
                 viewModel.insertDeleteFavorite(item)
             }
         }
-
-        viewModel.movies.observe(viewLifecycleOwner) {
-            when (it.status) {
+        collectLatestLifecycleFlow(viewModel.movies){
+            when (it!!.status) {
                 Status.SUCCESS -> {
                     mainShimmer.apply {
                         stopShimmer()

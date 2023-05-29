@@ -27,19 +27,19 @@ class UpcomingViewModel @Inject constructor(
     fun getMovies(){
         page += 1
         viewModelScope.launch {
-            _movies.postValue(Resource.loading(null))
+            _movies.emit(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 apiMovieUseCases.getUpcoming(page).let {
                     if (it.isSuccessful) {
                         if(it.body() != null) {
-                            _movies.postValue(Resource.success(it.body()!!.results))
+                            _movies.emit(Resource.success(it.body()!!.results))
                             listLoadedMovies.addAll(it.body()!!.results)
                         }else{
-                            _movies.postValue(Resource.success(listOf()))
+                            _movies.emit(Resource.success(listOf()))
                         }
-                    } else _movies.postValue(Resource.error(it.errorBody().toString(), null))
+                    } else _movies.emit(Resource.error(it.errorBody().toString(), null))
                 }
-            } else _movies.postValue(Resource.error("No internet connection", null))
+            } else _movies.emit(Resource.error("No internet connection", null))
         }
     }
 }

@@ -11,6 +11,8 @@ import com.aplus.domain.usecases.local.genres.GenresUseCases
 import com.aplus.domain.usecases.local.movies.MoviesUseCases
 import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,12 +22,13 @@ abstract class MovieViewModel(
     private val genresUseCases: GenresUseCases,
     private val moviesUseCases: MoviesUseCases
 ): ViewModel() {
-    protected val _movies = MutableLiveData<Resource<List<Movies>>>()
-    val movies: LiveData<Resource<List<Movies>>> = _movies
-    private val _genres = MutableLiveData<List<Genres>>()
-    val genres: LiveData<List<Genres>> = _genres
-    private val _favorit = MutableLiveData<List<Movies>>()
-    val favorit: LiveData<List<Movies>> = _favorit
+    protected val _movies: MutableStateFlow<Resource<List<Movies>>> =
+        MutableStateFlow(Resource.loading(null))
+    val movies = _movies.asStateFlow()
+    private val _genres: MutableStateFlow<List<Genres>> = MutableStateFlow(listOf())
+    val genres = _genres.asStateFlow()
+    private val _favorit: MutableStateFlow<List<Movies>> = MutableStateFlow(listOf())
+    val favorit = _favorit.asStateFlow()
 
     var page = 0
     var lastPositionAdapter = 0
@@ -35,7 +38,7 @@ abstract class MovieViewModel(
     protected fun getFavorite(){
         viewModelScope.launch {
             moviesUseCases.getListMovies().collectLatest {
-                _favorit.postValue(it)
+                _favorit.emit(it)
             }
         }
     }
@@ -53,12 +56,12 @@ abstract class MovieViewModel(
                                         genresUseCases.insertListGenres(genres)
                                     }
                                 }
-                                _genres.postValue(it.body()!!.genres)
+                                _genres.emit(it.body()!!.genres)
                             }
                         }
                     }
                 } else {
-                    _genres.postValue(listGenres)
+                    _genres.emit(listGenres)
                 }
             }
         }
@@ -70,7 +73,7 @@ abstract class MovieViewModel(
 
     fun insertDeleteFavorite(movies: Movies) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (_favorit.value!!.any { it.id == movies.id }) moviesUseCases.deleteSingleMovies(
+            if (_favorit.value.any { it.id == movies.id }) moviesUseCases.deleteSingleMovies(
                 movies.id
             )
             else moviesUseCases.insertSingleMovies(movies)

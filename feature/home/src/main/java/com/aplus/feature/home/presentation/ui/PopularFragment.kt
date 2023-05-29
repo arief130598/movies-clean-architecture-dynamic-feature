@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.aplus.common.presentation.adapter.MovieAdapter
 import com.aplus.core.constants.DeeplinkConstant.DETAIL_NAVIGATION
 import com.aplus.core.constants.KeyConstant.MOVIES_KEY
+import com.aplus.core.extensions.collectLatestLifecycleFlow
 import com.aplus.core.extensions.serialize
 import com.aplus.core.utils.NavigationHelper
 import com.aplus.core.utils.Status
@@ -44,7 +45,7 @@ class PopularFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = MovieAdapter(
@@ -95,16 +96,15 @@ class PopularFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        genres.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(genres){
             adapter.setGenre(it)
             getMovies()
         }
-
-        favorit.observe(viewLifecycleOwner) {
-            adapter.setFavorite(it)
+        collectLatestLifecycleFlow(favorit){
+            if(it.isNotEmpty()) adapter.setFavorite(it)
         }
 
-        movies.observe(viewLifecycleOwner) {
+        collectLatestLifecycleFlow(movies) {
             when (it.status) {
                 Status.SUCCESS -> {
                     binding.apply {

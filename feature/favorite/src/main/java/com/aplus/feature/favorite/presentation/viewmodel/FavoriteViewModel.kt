@@ -12,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -20,12 +22,12 @@ class FavoriteViewModel @Inject constructor(
     private val genresUseCases: GenresUseCases,
     private val moviesUseCases: MoviesUseCases
 ): ViewModel() {
-    private val _movies = MutableLiveData<HashMap<Int, Movies>>()
-    val movies: LiveData<HashMap<Int, Movies>> = _movies
-    private val _genres = MutableLiveData<List<Genres>>()
-    val genres: LiveData<List<Genres>> = _genres
-    private val _favorit = MutableLiveData<List<Movies>>()
-    val favorit: LiveData<List<Movies>> = _favorit
+    private val _movies: MutableStateFlow<HashMap<Int, Movies>> = MutableStateFlow(hashMapOf())
+    val movies = _movies.asStateFlow()
+    private val _genres: MutableStateFlow<List<Genres>> = MutableStateFlow(listOf())
+    val genres = _genres.asStateFlow()
+    private val _favorit: MutableStateFlow<List<Movies>> = MutableStateFlow(listOf())
+    val favorit = _favorit.asStateFlow()
 
     init {
         getGenres()
@@ -34,7 +36,7 @@ class FavoriteViewModel @Inject constructor(
     private fun getGenres(){
         viewModelScope.launch {
             genresUseCases.getListGenres().collectLatest { listGenres ->
-                _genres.postValue(listGenres)
+                _genres.emit(listGenres)
             }
         }
     }
@@ -42,7 +44,7 @@ class FavoriteViewModel @Inject constructor(
     fun getFavorite(){
         viewModelScope.launch {
             moviesUseCases.getListMovies().collectLatest {
-                _favorit.postValue(it)
+                _favorit.emit(it)
                 cancel()
             }
         }
@@ -52,10 +54,9 @@ class FavoriteViewModel @Inject constructor(
         val data = HashMap<Int, Movies>()
         data[position] = movies
         viewModelScope.launch(Dispatchers.IO) {
-            if(_favorit.value!!.contains(movies)) moviesUseCases.deleteSingleMovies(movies.id)
+            if(_favorit.value.contains(movies)) moviesUseCases.deleteSingleMovies(movies.id)
             else moviesUseCases.insertSingleMovies(movies)
-        }.invokeOnCompletion {
-            _movies.postValue(data)
+            _movies.emit(data)
         }
     }
 }
