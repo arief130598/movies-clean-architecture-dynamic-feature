@@ -8,23 +8,27 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aplus.common.presentation.adapter.MovieAdapter
+import com.aplus.core.constants.DeeplinkConstant
+import com.aplus.core.constants.KeyConstant
+import com.aplus.core.extensions.collectLatestLifecycleFlow
+import com.aplus.core.extensions.serialize
+import com.aplus.core.utils.NavigationHelper
 import com.aplus.core.utils.Status
 import com.aplus.feature.home.R
 import com.aplus.feature.home.databinding.FragmentNowPlayingBinding
 import com.aplus.feature.home.presentation.viewmodel.NowPlayingViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NowPlayingFragment : Fragment() {
 
     private lateinit var binding: FragmentNowPlayingBinding
     private val viewModel : NowPlayingViewModel by viewModels()
+    @Inject lateinit var nav: NavigationHelper
     private lateinit var adapter: MovieAdapter
     private var loadingMore = false
 
@@ -47,7 +51,14 @@ class NowPlayingFragment : Fragment() {
         adapter = MovieAdapter(
             items = listOf(),
             onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
-            onClickMovies = { }
+            onClickMovies = {
+                val args = it.serialize()
+                nav.navigateDeeplink(
+                    this@NowPlayingFragment,
+                    DeeplinkConstant.DETAIL_NAVIGATION,
+                    Pair(KeyConstant.MOVIES_KEY, args)
+                )
+            }
         )
         rvData.adapter = adapter
         rvData.layoutManager = LinearLayoutManager(requireContext())
@@ -85,49 +96,46 @@ class NowPlayingFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        lifecycleScope.launch{
-            genres.collectLatest {
-                adapter.setGenre(it)
-                getMovies()
-            }
+        collectLatestLifecycleFlow(genres){
+            adapter.setGenre(it)
+            getMovies()
+        }
+        collectLatestLifecycleFlow(favorit){
+            if(it.isNotEmpty()) adapter.setFavorite(it)
+        }
 
-            favorit.collectLatest {
-                adapter.setFavorite(it)
-            }
-
-            movies.collectLatest {
-                when (it!!.status) {
-                    Status.SUCCESS -> {
-                        binding.apply {
-                            if(adapter.itemCount == 0) {
-                                mainShimmer.apply {
-                                    stopShimmer()
-                                    visibility = View.GONE
-                                    rvData.visibility = View.VISIBLE
-                                    adapter.addData(it.data!!)
-                                }
-                            }else{
-                                progressBar.visibility = View.GONE
-                                adapter.addData(it.data!!)
-                                rvData.scrollToPosition(viewModel.lastPositionAdapter)
-                            }
-                        }
-                    }
-                    Status.LOADING -> {
+        collectLatestLifecycleFlow(movies){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    binding.apply {
                         if(adapter.itemCount == 0) {
-                            binding.mainShimmer.apply {
-                                startShimmer()
-                                visibility = View.VISIBLE
+                            mainShimmer.apply {
+                                stopShimmer()
+                                visibility = View.GONE
+                                rvData.visibility = View.VISIBLE
+                                adapter.addData(it.data!!)
                             }
+                        }else{
+                            progressBar.visibility = View.GONE
+                            adapter.addData(it.data!!)
+                            rvData.scrollToPosition(viewModel.lastPositionAdapter)
                         }
                     }
-                    Status.ERROR -> {
+                }
+                Status.LOADING -> {
+                    if(adapter.itemCount == 0) {
                         binding.mainShimmer.apply {
-                            stopShimmer()
-                            visibility = View.GONE
+                            startShimmer()
+                            visibility = View.VISIBLE
                         }
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     }
+                }
+                Status.ERROR -> {
+                    binding.mainShimmer.apply {
+                        stopShimmer()
+                        visibility = View.GONE
+                    }
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                 }
             }
         }

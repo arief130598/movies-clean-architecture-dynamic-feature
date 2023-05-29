@@ -22,7 +22,7 @@ class FavoriteViewModel @Inject constructor(
     private val genresUseCases: GenresUseCases,
     private val moviesUseCases: MoviesUseCases
 ): ViewModel() {
-    private val _movies: MutableStateFlow<HashMap<Int, Movies>?> = MutableStateFlow(null)
+    private val _movies: MutableStateFlow<HashMap<Int, Movies>> = MutableStateFlow(hashMapOf())
     val movies = _movies.asStateFlow()
     private val _genres: MutableStateFlow<List<Genres>> = MutableStateFlow(listOf())
     val genres = _genres.asStateFlow()

@@ -7,23 +7,27 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aplus.common.presentation.adapter.MovieAdapter
+import com.aplus.core.constants.DeeplinkConstant
+import com.aplus.core.constants.KeyConstant
+import com.aplus.core.extensions.collectLatestLifecycleFlow
 import com.aplus.core.extensions.remove
+import com.aplus.core.extensions.serialize
 import com.aplus.core.extensions.show
+import com.aplus.core.utils.NavigationHelper
 import com.aplus.feature.favorite.R
 import com.aplus.feature.favorite.databinding.FragmentFavoriteBinding
 import com.aplus.feature.favorite.presentation.viewmodel.FavoriteViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FavoriteFragment : Fragment() {
 
     private lateinit var binding: FragmentFavoriteBinding
     private val viewModel : FavoriteViewModel by viewModels()
+    @Inject lateinit var nav: NavigationHelper
     private lateinit var adapter: MovieAdapter
 
     override fun onCreateView(
@@ -50,7 +54,14 @@ class FavoriteFragment : Fragment() {
             onClickFavorite = { movies, i ->
                 viewModel.insertDeleteFavorite(movies, i)
             },
-            onClickMovies = { }
+            onClickMovies = {
+                val args = it.serialize()
+                nav.navigateDeeplink(
+                    this@FavoriteFragment,
+                    DeeplinkConstant.DETAIL_NAVIGATION,
+                    Pair(KeyConstant.MOVIES_KEY, args)
+                )
+            }
         )
         rvData.adapter = adapter
         rvData.layoutManager = LinearLayoutManager(requireContext())
@@ -59,26 +70,22 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        lifecycleScope.launch { 
-            genres.collectLatest {
-                adapter.setGenre(it)
-                viewModel.getFavorite()
+        collectLatestLifecycleFlow(genres){
+            adapter.setGenre(it)
+            viewModel.getFavorite()
+        }
+        collectLatestLifecycleFlow(favorit){
+            binding.apply {
+                mainShimmer.stopShimmer()
+                mainShimmer.remove()
+                if(it.isNotEmpty()) adapter.setFavorite(it)
+                rvData.show()
+                adapter.clearData()
+                adapter.addData(it)
             }
-            
-            favorit.collectLatest {
-                binding.apply {
-                    mainShimmer.stopShimmer()
-                    mainShimmer.remove()
-                    adapter.setFavorite(it)
-                    rvData.show()
-                    adapter.clearData()
-                    adapter.addData(it)
-                }
-            }
-
-            movies.collectLatest { data ->
-                data?.firstNotNullOf { adapter.removeData(it.value, it.key) }
-            }
+        }
+        collectLatestLifecycleFlow(movies){ data ->
+            if(data.isNotEmpty()) data.firstNotNullOf { adapter.removeData(it.value, it.key) }
         }
     }
 }

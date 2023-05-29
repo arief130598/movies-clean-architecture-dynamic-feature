@@ -22,7 +22,8 @@ abstract class MovieViewModel(
     private val genresUseCases: GenresUseCases,
     private val moviesUseCases: MoviesUseCases
 ): ViewModel() {
-    protected val _movies: MutableStateFlow<Resource<List<Movies>>?> = MutableStateFlow(null)
+    protected val _movies: MutableStateFlow<Resource<List<Movies>>> =
+        MutableStateFlow(Resource.loading(null))
     val movies = _movies.asStateFlow()
     private val _genres: MutableStateFlow<List<Genres>> = MutableStateFlow(listOf())
     val genres = _genres.asStateFlow()

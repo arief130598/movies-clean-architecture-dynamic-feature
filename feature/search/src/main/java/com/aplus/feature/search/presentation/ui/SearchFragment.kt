@@ -12,24 +12,28 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.aplus.common.presentation.adapter.MovieAdapter
+import com.aplus.core.constants.DeeplinkConstant
+import com.aplus.core.constants.KeyConstant
+import com.aplus.core.extensions.collectLatestLifecycleFlow
+import com.aplus.core.extensions.serialize
+import com.aplus.core.utils.NavigationHelper
 import com.aplus.core.utils.Status
 import com.aplus.feature.search.R
 import com.aplus.feature.search.databinding.FragmentSearchBinding
 import com.aplus.feature.search.presentation.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
     private val viewModel : SearchViewModel by viewModels()
+    @Inject lateinit var nav: NavigationHelper
     private lateinit var adapter: MovieAdapter
     private var loadingMore = false
 
@@ -84,7 +88,14 @@ class SearchFragment : Fragment() {
         adapter = MovieAdapter(
             items = listOf(),
             onClickFavorite =  { it, _ -> viewModel.insertDeleteFavorite(it) },
-            onClickMovies = { }
+            onClickMovies = {
+                val args = it.serialize()
+                nav.navigateDeeplink(
+                    this@SearchFragment,
+                    DeeplinkConstant.DETAIL_NAVIGATION,
+                    Pair(KeyConstant.MOVIES_KEY, args)
+                )
+            }
         )
         rvData.adapter = adapter
         rvData.layoutManager = LinearLayoutManager(requireContext())
@@ -114,48 +125,44 @@ class SearchFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
-        lifecycleScope.launch{
-            genres.collectLatest {
-                adapter.setGenre(it)
-            }
-
-            favorit.collectLatest {
-                adapter.setFavorite(it)
-            }
-
-            movies.collectLatest {
-                when (it!!.status) {
-                    Status.SUCCESS -> {
-                        binding.apply {
-                            if(adapter.itemCount == 0) {
-                                mainShimmer.apply {
-                                    stopShimmer()
-                                    visibility = View.GONE
-                                    rvData.visibility = View.VISIBLE
-                                    adapter.addData(it.data!!)
-                                    loadingMore = false
-                                }
-                            }else{
-                                progressBar.visibility = View.GONE
-                                adapter.addData(it.data!!)
-                            }
-                        }
-                    }
-                    Status.LOADING -> {
+        collectLatestLifecycleFlow(genres){
+            adapter.setGenre(it)
+        }
+        collectLatestLifecycleFlow(favorit){
+            if(it.isNotEmpty()) adapter.setFavorite(it)
+        }
+        collectLatestLifecycleFlow(movies){
+            when (it.status) {
+                Status.SUCCESS -> {
+                    binding.apply {
                         if(adapter.itemCount == 0) {
-                            binding.mainShimmer.apply {
-                                startShimmer()
-                                visibility = View.VISIBLE
+                            mainShimmer.apply {
+                                stopShimmer()
+                                visibility = View.GONE
+                                rvData.visibility = View.VISIBLE
+                                adapter.addData(it.data!!)
+                                loadingMore = false
                             }
+                        }else{
+                            progressBar.visibility = View.GONE
+                            adapter.addData(it.data!!)
                         }
                     }
-                    Status.ERROR -> {
+                }
+                Status.LOADING -> {
+                    if(adapter.itemCount == 0) {
                         binding.mainShimmer.apply {
-                            stopShimmer()
-                            visibility = View.GONE
+                            startShimmer()
+                            visibility = View.VISIBLE
                         }
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     }
+                }
+                Status.ERROR -> {
+                    binding.mainShimmer.apply {
+                        stopShimmer()
+                        visibility = View.GONE
+                    }
+                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                 }
             }
         }
