@@ -119,7 +119,7 @@ class DetailFragment : Fragment() {
             }
         }
         collectLatestLifecycleFlow(viewModel.movies){
-            when (it!!.status) {
+            when (it.status) {
                 Status.SUCCESS -> {
                     mainShimmer.apply {
                         stopShimmer()
