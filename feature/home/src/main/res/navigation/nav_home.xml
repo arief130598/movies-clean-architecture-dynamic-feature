@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_home"
+    app:startDestination="@id/genresFragment">
+    <fragment
+        android:id="@+id/genresFragment"
+        android:name="com.aplus.feature.home.presentation.ui.GenresFragment"
+        android:label="GenresFragment" />
+    <fragment
+        android:id="@+id/genresMoviesFragment"
+        android:name="com.aplus.feature.home.presentation.ui.GenresMoviesFragment"
+        android:label="GenresMoviesFragment"
+        tools:layout="@layout/fragment_genres_movies">
+        <argument
+            android:name="genresArg"
+            app:argType="string" />
+        <deepLink
+            android:autoVerify="true"
+            app:uri="aplus.com://movies/genres_movies?genres={genresArg}"/>
+    </fragment>
+    <fragment
+        android:id="@+id/nowPlayingFragment"
+        android:name="com.aplus.feature.home.presentation.ui.NowPlayingFragment"
+        android:label="NowPlayingFragment" />
+    <fragment
+        android:id="@+id/popularFragment"
+        android:name="com.aplus.feature.home.presentation.ui.PopularFragment"
+        android:label="PopularFragment" />
+    <fragment
+        android:id="@+id/upcomingFragment"
+        android:name="com.aplus.feature.home.presentation.ui.UpcomingFragment"
+        android:label="UpcomingFragment" />
+</navigation>

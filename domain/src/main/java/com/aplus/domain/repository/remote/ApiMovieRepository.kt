@@ -9,6 +9,8 @@ import retrofit2.Response
 interface ApiMovieRepository {
     suspend fun getGenres(): Response<GenresResponse>
 
+    suspend fun getMovies(page: Int, genres: String): Response<MoviesResponse>
+
     suspend fun getPopular(page: Int): Response<MoviesResponse>
 
     suspend fun getNowPlaying(page: Int): Response<MoviesResponse>

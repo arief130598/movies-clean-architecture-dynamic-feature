@@ -22,6 +22,13 @@ interface ApiMovieDB {
         @Query("api_key") api: String = API_KEY
     ): Response<GenresResponse>
 
+    @GET("discover/movie")
+    suspend fun getMovies(
+        @Query("api_key") api: String = API_KEY,
+        @Query("page") page: Int,
+        @Query("with_genres") genres: String,
+    ): Response<MoviesResponse>
+
     @GET("movie/popular")
     suspend fun getPopular(
         @Query("api_key") api: String = API_KEY,

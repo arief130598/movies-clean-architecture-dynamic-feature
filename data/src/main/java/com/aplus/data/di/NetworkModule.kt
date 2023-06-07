@@ -7,6 +7,7 @@ import com.aplus.data.repository.remote.ApiMovieDBRepoImpl
 import com.aplus.domain.repository.remote.ApiMovieRepository
 import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
 import com.aplus.domain.usecases.remote.apimovie.GetGenresApi
+import com.aplus.domain.usecases.remote.apimovie.GetMoviesApi
 import com.aplus.domain.usecases.remote.apimovie.GetNowPlayingApi
 import com.aplus.domain.usecases.remote.apimovie.GetPopularApi
 import com.aplus.domain.usecases.remote.apimovie.GetReviewsApi
@@ -77,6 +78,7 @@ class NetworkModule {
     @Singleton
     fun provideApiUseCases(apiMovieRepository: ApiMovieRepository): ApiMovieUseCases = ApiMovieUseCases(
             getGenresApi = GetGenresApi(apiMovieRepository),
+            getMoviesApi = GetMoviesApi(apiMovieRepository),
             getNowPlayingApi = GetNowPlayingApi(apiMovieRepository),
             getPopularApi = GetPopularApi(apiMovieRepository),
             getSearchApi = GetSearchApi(apiMovieRepository),

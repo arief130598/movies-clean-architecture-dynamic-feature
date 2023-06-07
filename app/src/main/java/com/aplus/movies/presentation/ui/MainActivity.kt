@@ -30,7 +30,14 @@ class MainActivity : AppCompatActivity() {
     private fun initActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
         val navController = navHostFragment.navController
-        val appBarConfiguration = AppBarConfiguration(setOf(R.id.popularFragment, R.id.nowPlayingFragment, R.id.upcomingFragment))
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.genresFragment,
+                R.id.popularFragment,
+                R.id.nowPlayingFragment,
+                R.id.upcomingFragment
+            )
+        )
         binding.topAppBar.setupWithNavController(navController, appBarConfiguration)
         binding.navBottom.setupWithNavController(navController)
         binding.topAppBar.setOnMenuItemClickListener {

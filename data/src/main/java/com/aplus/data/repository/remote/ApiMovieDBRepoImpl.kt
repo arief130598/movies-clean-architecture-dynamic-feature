@@ -20,6 +20,9 @@ class ApiMovieDBRepoImpl @Inject constructor(private val apiMovieDB: ApiMovieDB)
 
     override suspend fun getGenres(): Response<GenresResponse> = apiMovieDB.getGenres()
 
+    override suspend fun getMovies(page: Int, genres: String): Response<MoviesResponse> =
+        apiMovieDB.getMovies(page = page, genres = genres)
+
     override suspend fun getPopular(page: Int): Response<MoviesResponse> =
         apiMovieDB.getPopular(page = page)
 
