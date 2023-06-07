@@ -3,6 +3,7 @@ package com.aplus.data.repository.remote
 import com.aplus.data.datasource.remote.ApiMovieDB
 import com.aplus.domain.model.GenresResponse
 import com.aplus.domain.model.MoviesResponse
+import com.aplus.domain.model.MoviesVideosResponse
 import com.aplus.domain.repository.remote.ApiMovieRepository
 import javax.inject.Inject
 import retrofit2.Response
@@ -41,5 +42,11 @@ class ApiMovieDBRepoImpl @Inject constructor(private val apiMovieDB: ApiMovieDB)
     ): Response<MoviesResponse> = apiMovieDB.getSimilar(
         movie_id = movie_id,
         page = page
+    )
+
+    override suspend fun getVideos(
+        movie_id: Int
+    ): Response<MoviesVideosResponse> = apiMovieDB.getVideos(
+        movie_id = movie_id
     )
 }

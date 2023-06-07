@@ -123,6 +123,11 @@ object Deps {
         const val perf_plugin = "com.google.firebase:perf-plugin"
         const val dynamic_module = "com.google.firebase:firebase-dynamic-module-support"
     }
+
+    object YoutubePlayer {
+        private const val version = "12.0.0"
+        const val youtube_player = "com.pierfrancescosoffritti.androidyoutubeplayer:core:$version"
+    }
 }
 
 object TestDeps {

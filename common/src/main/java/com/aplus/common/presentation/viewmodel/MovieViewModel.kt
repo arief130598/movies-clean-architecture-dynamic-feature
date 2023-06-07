@@ -1,16 +1,14 @@
 package com.aplus.common.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aplus.core.utils.DispatcherProvider
 import com.aplus.core.utils.Resource
 import com.aplus.domain.model.Genres
 import com.aplus.domain.model.Movies
 import com.aplus.domain.usecases.local.genres.GenresUseCases
 import com.aplus.domain.usecases.local.movies.MoviesUseCases
 import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -20,7 +18,8 @@ import kotlinx.coroutines.withContext
 abstract class MovieViewModel(
     private val apiMovieUseCases: ApiMovieUseCases,
     private val genresUseCases: GenresUseCases,
-    private val moviesUseCases: MoviesUseCases
+    private val moviesUseCases: MoviesUseCases,
+    private val dispatcher: DispatcherProvider
 ): ViewModel() {
     protected val _movies: MutableStateFlow<Resource<List<Movies>>> =
         MutableStateFlow(Resource.loading(null))
@@ -52,7 +51,7 @@ abstract class MovieViewModel(
                             if(it.body() != null) {
                                 val genres = it.body()!!.genres
                                 if(genres.isNotEmpty()) {
-                                    withContext(Dispatchers.IO) {
+                                    withContext(dispatcher.io) {
                                         genresUseCases.insertListGenres(genres)
                                     }
                                 }
@@ -72,7 +71,7 @@ abstract class MovieViewModel(
     }
 
     fun insertDeleteFavorite(movies: Movies) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io) {
             if (_favorit.value.any { it.id == movies.id }) moviesUseCases.deleteSingleMovies(
                 movies.id
             )

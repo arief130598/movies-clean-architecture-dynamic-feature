@@ -55,6 +55,9 @@ dependencies {
     implementation(project(Modules.data))
     implementation(project(Modules.domain))
 
+    // Youtube Player
+    implementation(Deps.YoutubePlayer.youtube_player)
+
     // Hilt
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)

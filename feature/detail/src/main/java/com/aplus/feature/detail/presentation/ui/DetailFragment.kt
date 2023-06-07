@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.aplus.core.extensions.collectLatestLifecycleFlow
 import com.aplus.core.extensions.deserialize
 import com.aplus.core.extensions.removeFirstAndLast
+import com.aplus.core.extensions.show
 import com.aplus.core.utils.Status
 import com.aplus.domain.model.Movies
 import com.aplus.feature.detail.R
@@ -19,6 +20,8 @@ import com.aplus.feature.detail.databinding.FragmentDetailBinding
 import com.aplus.feature.detail.presentation.adapter.SimilarAdapter
 import com.aplus.feature.detail.presentation.viewmodel.DetailViewModel
 import com.bumptech.glide.Glide
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import dagger.hilt.android.AndroidEntryPoint
 import com.aplus.common.R as resourceCommon
 
@@ -78,6 +81,7 @@ class DetailFragment : Fragment() {
         overview.text = item.overview
 
         viewModel.getSimilar(item.id)
+        viewModel.getVideos(item.id)
     }
 
     private fun convertGenres(data: List<Int>): String{
@@ -142,6 +146,18 @@ class DetailFragment : Fragment() {
                     }
                     Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+        collectLatestLifecycleFlow(viewModel.videos){
+            if(it.status == Status.SUCCESS && !it.data.isNullOrEmpty()){
+                videoTrailer.show()
+                viewLifecycleOwner.lifecycle.addObserver(videoTrailer)
+                videoTrailer.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                    override fun onReady(youTubePlayer: YouTubePlayer) {
+                        val videoId = it.data!!.first().key
+                        youTubePlayer.cueVideo(videoId, 0f)
+                    }
+                })
             }
         }
     }

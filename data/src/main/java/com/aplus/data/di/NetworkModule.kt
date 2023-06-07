@@ -12,6 +12,7 @@ import com.aplus.domain.usecases.remote.apimovie.GetPopularApi
 import com.aplus.domain.usecases.remote.apimovie.GetSearchApi
 import com.aplus.domain.usecases.remote.apimovie.GetSimilarApi
 import com.aplus.domain.usecases.remote.apimovie.GetUpcomingApi
+import com.aplus.domain.usecases.remote.apimovie.GetVideosApi
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -79,6 +80,7 @@ class NetworkModule {
             getPopularApi = GetPopularApi(apiMovieRepository),
             getSearchApi = GetSearchApi(apiMovieRepository),
             getSimilarApi = GetSimilarApi(apiMovieRepository),
-            getUpcoming = GetUpcomingApi(apiMovieRepository)
+            getUpcomingApi = GetUpcomingApi(apiMovieRepository),
+            getVideosApi = GetVideosApi(apiMovieRepository)
         )
 }

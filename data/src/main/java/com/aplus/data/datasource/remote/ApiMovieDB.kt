@@ -3,6 +3,7 @@ package com.aplus.data.datasource.remote
 import com.aplus.core.constants.KeyConstant.API_KEY
 import com.aplus.domain.model.GenresResponse
 import com.aplus.domain.model.MoviesResponse
+import com.aplus.domain.model.MoviesVideosResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -51,4 +52,11 @@ interface ApiMovieDB {
         @Query("page") page: Int,
         @Query("api_key") api: String = API_KEY
     ): Response<MoviesResponse>
+
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getVideos(
+        @Path("movie_id") movie_id: Int,
+        @Query("api_key") api: String = API_KEY
+    ): Response<MoviesVideosResponse>
 }

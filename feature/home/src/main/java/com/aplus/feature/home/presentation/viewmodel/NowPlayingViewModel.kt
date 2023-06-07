@@ -2,6 +2,7 @@ package com.aplus.feature.home.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.aplus.common.presentation.viewmodel.MovieViewModel
+import com.aplus.core.utils.DispatcherProvider
 import com.aplus.core.utils.NetworkHelper
 import com.aplus.core.utils.Resource
 import com.aplus.domain.usecases.local.genres.GenresUseCases
@@ -17,8 +18,9 @@ class NowPlayingViewModel @Inject constructor(
     private val apiMovieUseCases: ApiMovieUseCases,
     genresUseCases: GenresUseCases,
     moviesUseCases: MoviesUseCases,
+    dispatcher: DispatcherProvider,
     private val networkHelper: NetworkHelper
-) : MovieViewModel(apiMovieUseCases, genresUseCases, moviesUseCases) {
+) : MovieViewModel(apiMovieUseCases, genresUseCases, moviesUseCases, dispatcher) {
 
     init {
         getFavorite()
