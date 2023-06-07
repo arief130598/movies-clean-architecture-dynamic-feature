@@ -7,5 +7,6 @@ data class ApiMovieUseCases (
     val getSearchApi: GetSearchApi,
     val getSimilarApi: GetSimilarApi,
     val getUpcomingApi: GetUpcomingApi,
-    val getVideosApi: GetVideosApi
+    val getVideosApi: GetVideosApi,
+    val getReviewsApi: GetReviewsApi
 )

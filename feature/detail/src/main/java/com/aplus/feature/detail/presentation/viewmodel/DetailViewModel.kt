@@ -1,16 +1,13 @@
 package com.aplus.feature.detail.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aplus.common.presentation.viewmodel.MovieViewModel
 import com.aplus.core.utils.DispatcherProvider
 import com.aplus.core.utils.NetworkHelper
 import com.aplus.core.utils.Resource
-import com.aplus.domain.model.Genres
 import com.aplus.domain.model.Movies
-import com.aplus.domain.model.MoviesVideos
+import com.aplus.domain.model.Reviews
+import com.aplus.domain.model.Videos
 import com.aplus.domain.usecases.local.genres.GenresUseCases
 import com.aplus.domain.usecases.local.movies.MoviesUseCases
 import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
@@ -29,9 +26,14 @@ class DetailViewModel @Inject constructor(
     private val networkHelper: NetworkHelper
 ) : MovieViewModel(apiMovieUseCases, genresUseCases, moviesUseCases, dispatcher) {
 
-    private val _videos: MutableStateFlow<Resource<List<MoviesVideos>>> =
+    private val _videos: MutableStateFlow<Resource<List<Videos>>> =
         MutableStateFlow(Resource.loading(null))
     val videos = _videos.asStateFlow()
+    private val _reviews: MutableStateFlow<Resource<List<Reviews>>> =
+        MutableStateFlow(Resource.loading(null))
+    val reviews = _reviews.asStateFlow()
+
+    var pageReview = 0
 
     init {
         getFavorite()
@@ -72,10 +74,16 @@ class DetailViewModel @Inject constructor(
                 apiMovieUseCases.getVideosApi(movieId).let {
                     if (it.isSuccessful) {
                         val data = it.body()?.results
-                        if(data != null) {
-                            val videosTrailer = data.filter { videos ->
+                        if(!data.isNullOrEmpty()) {
+                            var videosTrailer = data.filter { videos ->
                                 videos.name.contains("Official Trailer")
                             }
+                            if(videosTrailer.isEmpty()) {
+                                videosTrailer = data.filter { videos ->
+                                    videos.name.contains("Trailer")
+                                }
+                            }
+
                             _videos.emit(Resource.success(videosTrailer))
                         }else{
                             _videos.emit(Resource.success(listOf()))
@@ -83,6 +91,25 @@ class DetailViewModel @Inject constructor(
                     } else _videos.emit(Resource.error(it.errorBody().toString(), null))
                 }
             } else _videos.emit(Resource.error("No internet connection", null))
+        }
+    }
+
+    fun getReview(movieId: Int){
+        pageReview += 1
+        viewModelScope.launch {
+            if (networkHelper.isNetworkConnected()) {
+                apiMovieUseCases.getReviewsApi(movieId, pageReview).let {
+                    if (it.isSuccessful) {
+                        it.body()?.let { data ->
+                            if(data.results.isNotEmpty()) {
+                                _reviews.emit(Resource.success(it.body()!!.results))
+                            }else{
+                                _reviews.emit(Resource.error(it.errorBody().toString(), null))
+                            }
+                        }
+                    } else _reviews.emit(Resource.error(it.errorBody().toString(), null))
+                }
+            } else _reviews.emit(Resource.error("No internet connection", null))
         }
     }
 }

@@ -2,7 +2,8 @@ package com.aplus.domain.repository.remote
 
 import com.aplus.domain.model.GenresResponse
 import com.aplus.domain.model.MoviesResponse
-import com.aplus.domain.model.MoviesVideosResponse
+import com.aplus.domain.model.ReviewsResponse
+import com.aplus.domain.model.VideosResponse
 import retrofit2.Response
 
 interface ApiMovieRepository {
@@ -26,5 +27,10 @@ interface ApiMovieRepository {
 
     suspend fun getVideos(
         movie_id: Int
-    ): Response<MoviesVideosResponse>
+    ): Response<VideosResponse>
+
+    suspend fun getReviews(
+        movie_id: Int,
+        page: Int
+    ): Response<ReviewsResponse>
 }

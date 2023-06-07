@@ -9,6 +9,7 @@ import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
 import com.aplus.domain.usecases.remote.apimovie.GetGenresApi
 import com.aplus.domain.usecases.remote.apimovie.GetNowPlayingApi
 import com.aplus.domain.usecases.remote.apimovie.GetPopularApi
+import com.aplus.domain.usecases.remote.apimovie.GetReviewsApi
 import com.aplus.domain.usecases.remote.apimovie.GetSearchApi
 import com.aplus.domain.usecases.remote.apimovie.GetSimilarApi
 import com.aplus.domain.usecases.remote.apimovie.GetUpcomingApi
@@ -81,6 +82,7 @@ class NetworkModule {
             getSearchApi = GetSearchApi(apiMovieRepository),
             getSimilarApi = GetSimilarApi(apiMovieRepository),
             getUpcomingApi = GetUpcomingApi(apiMovieRepository),
-            getVideosApi = GetVideosApi(apiMovieRepository)
+            getVideosApi = GetVideosApi(apiMovieRepository),
+            getReviewsApi = GetReviewsApi(apiMovieRepository)
         )
 }

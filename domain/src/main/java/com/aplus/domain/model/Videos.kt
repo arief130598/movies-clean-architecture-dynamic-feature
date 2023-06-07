@@ -1,6 +1,6 @@
 package com.aplus.domain.model
 
-data class MoviesVideos(
+data class Videos(
     var iso_639_1: String = "",
     var iso_3166_1: String = "",
     var name: String = "",
