@@ -11,7 +11,9 @@ import com.aplus.domain.usecases.local.movies.MoviesUseCases
 import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -46,19 +48,17 @@ abstract class MovieViewModel(
         viewModelScope.launch {
             genresUseCases.getListGenres().collectLatest { listGenres ->
                 if (listGenres.isEmpty()) {
-                    apiMovieUseCases.getGenresApi().let {
-                        if (it.isSuccessful) {
-                            if(it.body() != null) {
-                                val genres = it.body()!!.genres
-                                if(genres.isNotEmpty()) {
+                    apiMovieUseCases.getGenresApi().flowOn(dispatcher.io)
+                        .collectLatest {
+                            it.body()?.genres?.let { data ->
+                                if(data.isNotEmpty()) {
                                     withContext(dispatcher.io) {
-                                        genresUseCases.insertListGenres(genres)
+                                        genresUseCases.insertListGenres(data)
                                     }
                                 }
-                                _genres.emit(it.body()!!.genres)
+                                _genres.emit(data)
                             }
                         }
-                    }
                 } else {
                     _genres.emit(listGenres)
                 }

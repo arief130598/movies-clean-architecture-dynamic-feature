@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.aplus.common.R
 import com.aplus.common.databinding.RvMoviesBinding
+import com.aplus.common.utils.MoviesHelper
 import com.aplus.domain.model.Genres
 import com.aplus.domain.model.Movies
 import com.bumptech.glide.Glide
-import javax.inject.Inject
 
 /**
  *
@@ -17,14 +17,15 @@ import javax.inject.Inject
  *
  * @property items is List of Movies Data
  */
-class MovieAdapter @Inject constructor(
+class MovieAdapter(
     private var items: List<Movies>,
     private val onClickFavorite: (Movies, Int) -> Unit,
-    private val onClickMovies: (Movies) -> Unit
+    private val onClickMovies: (Movies) -> Unit,
 ) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
     private var listGenres: List<Genres> = listOf()
     private var listFavorite: MutableList<Movies> = mutableListOf()
+    private var moviesHelper: MoviesHelper = MoviesHelper()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -48,8 +49,8 @@ class MovieAdapter @Inject constructor(
             }
             title.text = item.title
             rating.text = item.vote_average.toString()
-            overview.text = limitOverview(item.overview)
-            genres.text = convertGenres(item.genre_ids)
+            overview.text = moviesHelper.limitOverview(item.overview)
+            genres.text = moviesHelper.convertGenres(item.genre_ids, listGenres)
             if (listFavorite.any { it.id == item.id }) {
                 favorite.setImageResource(R.drawable.ic_favorite_32)
             } else {
@@ -92,38 +93,5 @@ class MovieAdapter @Inject constructor(
 
     fun setFavorite(data: List<Movies>) {
         this.listFavorite = data as MutableList<Movies>
-    }
-
-    fun limitOverview(data: String): String {
-        return if (data.length > 100) {
-            var overview = data.substring(0, 100)
-            if (overview[overview.length - 1] != '.') {
-                overview = "$overview..."
-            }
-            overview
-        } else {
-            data
-        }
-    }
-
-    fun convertGenres(data: List<Int>): String {
-        var genres = ""
-        return if (data.isNotEmpty()) {
-            data.forEach {
-                val item = this.listGenres.filter { x -> x.id == it }
-                genres += if (item.isNotEmpty()) {
-                    "${item[0].name}, "
-                } else {
-                    "${it}, "
-                }
-            }
-            if (genres.length > 2) {
-                genres.substring(0, genres.length - 2)
-            } else {
-                genres
-            }
-        } else {
-            genres
-        }
     }
 }

@@ -12,6 +12,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -35,21 +38,18 @@ class GenresViewModel @Inject constructor(
         viewModelScope.launch {
             _genres.emit(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
-                apiMovieUseCases.getGenresApi().let {
-                    if (it.isSuccessful) {
-                        if(it.body() != null) {
-                            val genres = it.body()!!.genres
-                            if(genres.isNotEmpty()) {
+                apiMovieUseCases.getGenresApi().flowOn(dispatcher.io)
+                    .catch { _genres.emit(Resource.error(it.toString(), null)) }
+                    .collectLatest {
+                        it.body()?.genres?.let { data ->
+                            if(data.isNotEmpty()) {
                                 withContext(dispatcher.io) {
-                                    genresUseCases.insertListGenres(genres)
+                                    genresUseCases.insertListGenres(data)
                                 }
                             }
-                            _genres.emit(Resource.success(genres))
-                        }else{
-                            _genres.emit(Resource.success(listOf()))
+                            _genres.emit(Resource.success(data))
                         }
-                    } else _genres.emit(Resource.error(it.errorBody().toString(), null))
-                }
+                    }
             } else _genres.emit(Resource.error("No internet connection", null))
         }
     }

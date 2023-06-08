@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aplus.common.utils.MoviesHelper
 import com.aplus.core.extensions.collectLatestLifecycleFlow
 import com.aplus.core.extensions.deserialize
 import com.aplus.core.extensions.remove
@@ -26,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import com.aplus.common.R as resourceCommon
 
 
@@ -36,6 +38,7 @@ class DetailFragment : Fragment() {
     private val viewModel : DetailViewModel by viewModels()
     private lateinit var similarAdapter: SimilarAdapter
     private lateinit var reviewAdapter: ReviewAdapter
+    @Inject lateinit var moviesHelper: MoviesHelper
     private lateinit var youtubePlayerHelper: YouTubePlayer
     private var initializeVideo = false
     private var loadingMore = false
@@ -114,25 +117,6 @@ class DetailFragment : Fragment() {
         viewModel.getReview(item.id)
     }
 
-    private fun convertGenres(data: List<Int>): String{
-        var genres = ""
-        return if(data.isNotEmpty()) {
-            data.forEach {
-                val item = viewModel.genres.value.filter { x -> x.id == it }
-                if (item.isNotEmpty()) {
-                    genres += "${item[0].name}, "
-                }
-            }
-            if(genres.length > 2) {
-                genres.substring(0, genres.length-2)
-            }else{
-                genres
-            }
-        }else{
-            genres
-        }
-    }
-
     private fun observer(item: Movies) = with(binding) {
         observeGenres(item)
         observeFavorit(item)
@@ -142,8 +126,9 @@ class DetailFragment : Fragment() {
     }
 
     private fun observeGenres(item: Movies) = with(binding) {
-        collectLatestLifecycleFlow(viewModel.genres){
-            genres.text = "Genres : ${convertGenres(item.genre_ids)}"
+        collectLatestLifecycleFlow(viewModel.genres) {
+            genres.text =
+                "Genres : ${moviesHelper.convertGenres(item.genre_ids, viewModel.genres.value)}"
         }
     }
 

@@ -18,7 +18,7 @@ import javax.inject.Inject
  *
  * @property items is List of Movies Data
  */
-class SimilarAdapter @Inject constructor(private var items: List<Movies>, private val fragment: Fragment) :
+class SimilarAdapter(private var items: List<Movies>, private val fragment: Fragment) :
     RecyclerView.Adapter<SimilarAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

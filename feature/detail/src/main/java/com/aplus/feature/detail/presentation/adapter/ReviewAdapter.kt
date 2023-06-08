@@ -10,7 +10,7 @@ import com.aplus.feature.detail.databinding.RvReviewBinding
 import com.bumptech.glide.Glide
 import javax.inject.Inject
 
-class ReviewAdapter @Inject constructor(private var items: List<Reviews>, private var fragment: Fragment) :
+class ReviewAdapter (private var items: List<Reviews>, private var fragment: Fragment) :
     RecyclerView.Adapter<ReviewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
