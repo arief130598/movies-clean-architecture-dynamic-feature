@@ -1,4 +1,6 @@
 import extensions.coreModuleDeps
+import extensions.project
+import extensions.testingModuleDeps
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -27,4 +29,7 @@ android {
 
 dependencies {
     coreModuleDeps()
+
+    testImplementation(project(Modules.core))
+    testingModuleDeps()
 }

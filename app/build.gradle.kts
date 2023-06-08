@@ -1,5 +1,6 @@
 import extensions.appModuleDeps
 import extensions.implementation
+import extensions.testingModuleDeps
 
 plugins {
     id(Plugins.ANDROID_APPLICATION)
@@ -60,4 +61,5 @@ dependencies {
     implementation(project(Feature.detail))
 
     appModuleDeps()
+    testingModuleDeps()
 }

@@ -149,6 +149,12 @@ object TestDeps {
         const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
     }
 
+    object Hilt {
+        private const val version = "2.44"
+        const val hilt = "com.google.dagger:hilt-android-compiler:$version"
+        const val hiltInstrument = "com.google.dagger:hilt-android-compiler:2.44:$version"
+    }
+
     object JUnit {
         private const val version = "4.13.2"
         const val junit = "junit:junit:$version"
@@ -166,7 +172,7 @@ object TestDeps {
     }
 
     object Mockito {
-        private const val version = "5.0.0"
+        private const val version = "5.2.0"
         const val core = "org.mockito:mockito-core:$version"
         const val inline = "org.mockito:mockito-inline:$version"
         const val android = "org.mockito:mockito-android:$version"
@@ -183,7 +189,7 @@ object TestDeps {
     }
 
     object Turbine {
-        private const val version = "0.12.1"
+        private const val version = "0.13.0"
         const val turbine = "app.cash.turbine:turbine:$version"
     }
 

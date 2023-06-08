@@ -34,20 +34,24 @@ class GenresViewModel @Inject constructor(
         getGenres()
     }
 
-    private fun getGenres(){
+    fun getGenres(){
         viewModelScope.launch {
             _genres.emit(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
                 apiMovieUseCases.getGenresApi().flowOn(dispatcher.io)
                     .catch { _genres.emit(Resource.error(it.toString(), null)) }
                     .collectLatest {
-                        it.body()?.genres?.let { data ->
-                            if(data.isNotEmpty()) {
-                                withContext(dispatcher.io) {
-                                    genresUseCases.insertListGenres(data)
+                        if(it.body()?.genres != null){
+                            it.body()?.genres?.let { data ->
+                                if(data.isNotEmpty()) {
+                                    withContext(dispatcher.io) {
+                                        genresUseCases.insertListGenres(data)
+                                    }
                                 }
+                                _genres.emit(Resource.success(data))
                             }
-                            _genres.emit(Resource.success(data))
+                        }else{
+                            _genres.emit(Resource.error(it.message(), null))
                         }
                     }
             } else _genres.emit(Resource.error("No internet connection", null))

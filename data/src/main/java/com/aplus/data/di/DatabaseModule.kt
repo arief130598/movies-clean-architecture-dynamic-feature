@@ -1,6 +1,7 @@
 package com.aplus.data.di
 
 import android.content.Context
+import com.aplus.data.datasource.local.MovieDatabase
 import com.aplus.data.repository.local.GenresRepoImpl
 import com.aplus.data.repository.local.MoviesRepoImpl
 import com.aplus.domain.repository.local.GenresRepository

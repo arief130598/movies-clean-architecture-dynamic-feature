@@ -38,9 +38,13 @@ class NowPlayingViewModel @Inject constructor(
                 apiMovieUseCases.getNowPlayingApi(page).flowOn(dispatcher.io)
                     .catch { _movies.emit(Resource.error(it.toString(), null)) }
                     .collectLatest {
-                        it.body()?.results?.let { data ->
-                            _movies.emit(Resource.success(data))
-                            listLoadedMovies.addAll(data)
+                        if(it.body()?.results != null){
+                            it.body()?.results?.let { data ->
+                                _movies.emit(Resource.success(data))
+                                listLoadedMovies.addAll(data)
+                            }
+                        } else {
+                            _movies.emit(Resource.error(it.message(), null))
                         }
                     }
             } else _movies.emit(Resource.error("No internet connection", null))

@@ -51,17 +51,21 @@ class DetailViewModel @Inject constructor(
                 apiMovieUseCases.getSimilarApi(movieId, page).flowOn(dispatcher.io)
                     .catch { _movies.emit(Resource.error(it.toString(), null)) }
                     .collectLatest {
-                        val data = mutableListOf<Movies>()
-                        it.body()?.let { value ->
-                            for(i in value.results.indices){
-                                if(i < 5){
-                                    data.add(value.results[i])
-                                }else{
-                                    break
+                        if(it.body()?.results != null) {
+                            val data = mutableListOf<Movies>()
+                            it.body()?.let { value ->
+                                for (i in value.results.indices) {
+                                    if (i < 5) {
+                                        data.add(value.results[i])
+                                    } else {
+                                        break
+                                    }
                                 }
                             }
+                            _movies.emit(Resource.success(data))
+                        } else {
+                            _movies.emit(Resource.error(it.message(), null))
                         }
-                        _movies.emit(Resource.success(data))
                     }
             } else _movies.emit(Resource.error("No internet connection", null))
         }
@@ -73,16 +77,20 @@ class DetailViewModel @Inject constructor(
                 apiMovieUseCases.getVideosApi(movieId).flowOn(dispatcher.io)
                     .catch { _movies.emit(Resource.error(it.toString(), null)) }
                     .collectLatest {
-                        it.body()?.results?.let { data ->
-                            var videosTrailer = data.filter { videos ->
-                                videos.name.contains("Official Trailer")
-                            }
-                            if(videosTrailer.isEmpty()) {
-                                videosTrailer = data.filter { videos ->
-                                    videos.name.contains("Trailer")
+                        if(it.body()?.results != null) {
+                            it.body()?.results?.let { data ->
+                                var videosTrailer = data.filter { videos ->
+                                    videos.name.contains("Official Trailer")
                                 }
+                                if (videosTrailer.isEmpty()) {
+                                    videosTrailer = data.filter { videos ->
+                                        videos.name.contains("Trailer")
+                                    }
+                                }
+                                _videos.emit(Resource.success(videosTrailer))
                             }
-                            _videos.emit(Resource.success(videosTrailer))
+                        } else {
+                            _videos.emit(Resource.error(it.message(), null))
                         }
                     }
             } else _videos.emit(Resource.error("No internet connection", null))
@@ -96,12 +104,16 @@ class DetailViewModel @Inject constructor(
                 apiMovieUseCases.getReviewsApi(movieId, pageReview).flowOn(dispatcher.io)
                     .catch { _movies.emit(Resource.error(it.toString(), null)) }
                     .collectLatest {
-                        it.body()?.let { data ->
-                            if(data.results.isNotEmpty()) {
-                                _reviews.emit(Resource.success(it.body()!!.results))
-                            }else{
-                                _reviews.emit(Resource.error(it.errorBody().toString(), null))
+                        if(it.body()?.results != null) {
+                            it.body()?.let { data ->
+                                if (data.results.isNotEmpty()) {
+                                    _reviews.emit(Resource.success(it.body()!!.results))
+                                } else {
+                                    _reviews.emit(Resource.error(it.errorBody().toString(), null))
+                                }
                             }
+                        } else {
+                            _reviews.emit(Resource.error(it.message(), null))
                         }
                     }
             } else _reviews.emit(Resource.error("No internet connection", null))
