@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 
 class MoviesRepositoryFake : MoviesRepository {
 
-    var listMovies: List<Movies> = listOf(
+    var listMovies: MutableList<Movies> = mutableListOf(
         Movies(
             false, "/y5Z0WesTjvn59jP6yo459eUsbli.jpg", listOf(27,53), 663712, "en",
             "Terrifier 1", "After being resurrected by a sinister entity, Art the Clown returns to " +
@@ -41,7 +41,8 @@ class MoviesRepositoryFake : MoviesRepository {
     }
 
     override suspend fun insertSingle(movies: Movies): Long {
-        TODO("Not yet implemented")
+        listMovies.add(movies)
+        return listMovies.size.toLong()
     }
 
     override suspend fun deleteAll(): Int {
@@ -49,6 +50,9 @@ class MoviesRepositoryFake : MoviesRepository {
     }
 
     override suspend fun deleteSingle(id: Int): Int {
-        TODO("Not yet implemented")
+        listMovies.removeIf {
+            it.id == id
+        }
+        return id
     }
 }

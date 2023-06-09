@@ -37,6 +37,7 @@ import com.aplus.common.repository.local.MoviesRepositoryFake
 import com.aplus.common.repository.remote.ApiMovieRepositoryFake
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -180,7 +181,7 @@ class SearchViewModelTest {
     @Test
     fun `when getFavorite is called observe with stateflow when get from local is empty`() {
         fakeMoviesRepository = MoviesRepositoryFake()
-        fakeMoviesRepository.listMovies = listOf()
+        fakeMoviesRepository.listMovies = mutableListOf()
 
         moviesUseCases = MoviesUseCases(
             deleteAllMovies = DeleteAllMovies(fakeMoviesRepository),
@@ -197,6 +198,43 @@ class SearchViewModelTest {
                 emptyList<Movies>(),
                 viewModel.favorit.value
             )
+        }
+    }
+
+    @Test
+    fun `when insertDeleteFavorite is called and favorit has value is delete`() {
+        runBlocking {
+            val movies = Movies(
+                false, "/y5Z0WesTjvn59jP6yo459eUsbli.jpg", listOf(27,53), 663712, "en",
+                "Terrifier 1", "After being resurrected by a sinister entity, Art the Clown returns to " +
+                        "Miles County where he must hunt down and destroy a teenage girl and her younger brother on Halloween night.  " +
+                        "As the body count rises, the siblings fight to stay alive while uncovering the true nature of Art's evil intent.",
+                9049.191F,"/y5Z0WesTjvn59jP6yo459eUsbli.jpg", "2022-10-06", "Terrifier 2", 7.4F,
+                246
+            )
+
+            viewModel.insertDeleteFavorite(movies)
+            assertEquals(
+                1,
+                fakeMoviesRepository.listMovies.size
+            )
+        }
+    }
+
+    @Test
+    fun `when insertDeleteFavorite is called and favorit dont have value is insert`() {
+        runTest {
+            val movies = Movies(
+                false, "/y5Z0WesTjvn59jP6yo459eUsbli.jpg", listOf(27,53), 663715, "en",
+                "Terrifier 3", "After being resurrected by a sinister entity, Art the Clown returns to " +
+                        "Miles County where he must hunt down and destroy a teenage girl and her younger brother on Halloween night.  " +
+                        "As the body count rises, the siblings fight to stay alive while uncovering the true nature of Art's evil intent.",
+                9049.191F,"/y5Z0WesTjvn59jP6yo459eUsbli.jpg", "2022-10-06", "Terrifier 2", 7.4F,
+                246
+            )
+
+            viewModel.insertDeleteFavorite(movies)
+            assertEquals(3, fakeMoviesRepository.listMovies.size)
         }
     }
 }
