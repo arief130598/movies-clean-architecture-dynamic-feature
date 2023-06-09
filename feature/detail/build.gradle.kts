@@ -1,6 +1,7 @@
 import extensions.implementation
 import extensions.kapt
 import extensions.project
+import extensions.testingModuleDeps
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -55,7 +56,13 @@ dependencies {
     implementation(project(Modules.data))
     implementation(project(Modules.domain))
 
+    // Youtube Player
+    implementation(Deps.YoutubePlayer.youtube_player)
+
     // Hilt
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)
+
+    testImplementation(project(Modules.core))
+    testingModuleDeps()
 }

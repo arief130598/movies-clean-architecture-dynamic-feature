@@ -22,6 +22,15 @@ fun DependencyHandler.api(dependencyNotation: Any): Dependency? =
 fun DependencyHandler.kapt(dependencyNotation: Any): Dependency? =
     add("kapt", dependencyNotation)
 
+@Suppress("detekt.UnusedPrivateMember")
+fun DependencyHandler.kaptTest(dependencyNotation: Any): Dependency? =
+    add("kaptTest", dependencyNotation)
+
+
+@Suppress("detekt.UnusedPrivateMember")
+fun DependencyHandler.kaptAndroidTest(dependencyNotation: Any): Dependency? =
+    add("kaptAndroidTest", dependencyNotation)
+
 fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? =
     add("testImplementation", dependencyNotation)
 

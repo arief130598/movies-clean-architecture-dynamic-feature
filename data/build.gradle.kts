@@ -2,6 +2,7 @@ import extensions.dataModuleDeps
 import extensions.implementation
 import extensions.kapt
 import extensions.project
+import extensions.testingModuleDeps
 
 plugins {
     id(Plugins.ANDROID_LIBRARY)
@@ -31,4 +32,6 @@ dependencies {
     // Hilt
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)
+
+    testingModuleDeps()
 }

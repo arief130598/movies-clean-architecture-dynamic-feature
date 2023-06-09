@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="image_url">https://image.tmdb.org/t/p/w185</string>
+    <string name="avatar_url">https://image.tmdb.org/t/p/w92</string>
     <string name="poster">Poster</string>
     <string name="favorite">Favorite</string>
     <string name="rating">Rating :</string>
@@ -8,4 +9,5 @@
     <string name="now_playing">Now Playing</string>
     <string name="search" tools:ignore="ExtraTranslation">Search</string>
     <string name="upcoming">Upcoming</string>
+    <string name="genres">Genres</string>
 </resources>

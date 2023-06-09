@@ -7,11 +7,14 @@ import com.aplus.data.repository.remote.ApiMovieDBRepoImpl
 import com.aplus.domain.repository.remote.ApiMovieRepository
 import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
 import com.aplus.domain.usecases.remote.apimovie.GetGenresApi
+import com.aplus.domain.usecases.remote.apimovie.GetMoviesApi
 import com.aplus.domain.usecases.remote.apimovie.GetNowPlayingApi
 import com.aplus.domain.usecases.remote.apimovie.GetPopularApi
+import com.aplus.domain.usecases.remote.apimovie.GetReviewsApi
 import com.aplus.domain.usecases.remote.apimovie.GetSearchApi
 import com.aplus.domain.usecases.remote.apimovie.GetSimilarApi
 import com.aplus.domain.usecases.remote.apimovie.GetUpcomingApi
+import com.aplus.domain.usecases.remote.apimovie.GetVideosApi
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -75,10 +78,13 @@ class NetworkModule {
     @Singleton
     fun provideApiUseCases(apiMovieRepository: ApiMovieRepository): ApiMovieUseCases = ApiMovieUseCases(
             getGenresApi = GetGenresApi(apiMovieRepository),
+            getMoviesApi = GetMoviesApi(apiMovieRepository),
             getNowPlayingApi = GetNowPlayingApi(apiMovieRepository),
             getPopularApi = GetPopularApi(apiMovieRepository),
             getSearchApi = GetSearchApi(apiMovieRepository),
             getSimilarApi = GetSimilarApi(apiMovieRepository),
-            getUpcoming = GetUpcomingApi(apiMovieRepository)
+            getUpcomingApi = GetUpcomingApi(apiMovieRepository),
+            getVideosApi = GetVideosApi(apiMovieRepository),
+            getReviewsApi = GetReviewsApi(apiMovieRepository)
         )
 }

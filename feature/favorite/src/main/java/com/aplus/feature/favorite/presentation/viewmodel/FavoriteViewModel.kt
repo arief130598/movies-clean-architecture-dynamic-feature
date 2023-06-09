@@ -1,15 +1,15 @@
 package com.aplus.feature.favorite.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aplus.core.utils.DispatcherProvider
 import com.aplus.domain.model.Genres
 import com.aplus.domain.model.Movies
 import com.aplus.domain.usecases.local.genres.GenresUseCases
 import com.aplus.domain.usecases.local.movies.MoviesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class FavoriteViewModel @Inject constructor(
     private val genresUseCases: GenresUseCases,
-    private val moviesUseCases: MoviesUseCases
+    private val moviesUseCases: MoviesUseCases,
+    private val dispatcher: DispatcherProvider
 ): ViewModel() {
     private val _movies: MutableStateFlow<HashMap<Int, Movies>> = MutableStateFlow(hashMapOf())
     val movies = _movies.asStateFlow()
@@ -53,7 +54,7 @@ class FavoriteViewModel @Inject constructor(
     fun insertDeleteFavorite(movies: Movies, position: Int) {
         val data = HashMap<Int, Movies>()
         data[position] = movies
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.io) {
             if(_favorit.value.contains(movies)) moviesUseCases.deleteSingleMovies(movies.id)
             else moviesUseCases.insertSingleMovies(movies)
             _movies.emit(data)

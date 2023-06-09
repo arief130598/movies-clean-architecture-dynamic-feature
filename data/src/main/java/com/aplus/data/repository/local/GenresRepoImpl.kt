@@ -1,7 +1,6 @@
 package com.aplus.data.repository.local
 
 import com.aplus.data.datasource.local.GenresTable
-import com.aplus.data.di.MovieDatabase
 import com.aplus.domain.model.Genres
 import com.aplus.domain.repository.local.GenresRepository
 import javax.inject.Inject

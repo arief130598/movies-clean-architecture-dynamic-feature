@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/popularFragment">
+    app:startDestination="@id/genresFragment">
 
     <!-- Region Top Bar -->
     <fragment
@@ -21,6 +21,12 @@
     <!-- Region End -->
 
     <!-- Region Bottom Bar -->
+    <fragment
+        android:id="@+id/genresFragment"
+        android:name="com.aplus.feature.home.presentation.ui.GenresFragment"
+        android:label="Genres Movies"
+        tools:layout="@layout/fragment_genres" >
+    </fragment>
     <fragment
         android:id="@+id/popularFragment"
         android:name="com.aplus.feature.home.presentation.ui.PopularFragment"
@@ -41,5 +47,8 @@
     </fragment>
     <!-- Region End -->
 
+    <!-- Region Graph -->
+    <include app:graph="@navigation/nav_home"/>
     <include app:graph="@navigation/nav_detail"/>
+    <!-- Region End -->
 </navigation>

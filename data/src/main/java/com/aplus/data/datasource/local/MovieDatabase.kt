@@ -1,12 +1,10 @@
-package com.aplus.data.di
+package com.aplus.data.datasource.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.aplus.data.datasource.local.GenresTable
-import com.aplus.data.datasource.local.MoviesTable
 import com.aplus.data.utils.MovieDBConverters
 import com.aplus.domain.model.Genres
 import com.aplus.domain.model.Movies

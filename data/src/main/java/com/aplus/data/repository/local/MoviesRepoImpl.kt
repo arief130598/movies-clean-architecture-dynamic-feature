@@ -1,7 +1,6 @@
 package com.aplus.data.repository.local
 
 import com.aplus.data.datasource.local.MoviesTable
-import com.aplus.data.di.MovieDatabase
 import com.aplus.domain.model.Movies
 import com.aplus.domain.repository.local.MoviesRepository
 import javax.inject.Inject
