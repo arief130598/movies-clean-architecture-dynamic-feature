@@ -128,6 +128,11 @@ object Deps {
         private const val version = "12.0.0"
         const val youtube_player = "com.pierfrancescosoffritti.androidyoutubeplayer:core:$version"
     }
+
+    object Paging {
+        private const val version = "3.1.1"
+        const val paging = "androidx.paging:paging-runtime:$version"
+    }
 }
 
 object TestDeps {

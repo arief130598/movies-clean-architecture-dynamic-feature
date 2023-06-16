@@ -42,6 +42,8 @@ fun DependencyHandler.coreModuleDeps() {
     api(Deps.AndroidX.Navigation.fragment)
     api(Deps.AndroidX.Navigation.commonKtx)
 
+    api(Deps.Paging.paging)
+
     implementation(Deps.DaggerHilt.hiltAndroid)
     kapt(Deps.DaggerHilt.hiltAndroidCompiler)
 }
