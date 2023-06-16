@@ -16,7 +16,7 @@ import com.aplus.core.constants.KeyConstant.MOVIES_KEY
 import com.aplus.core.extensions.collectLatestLifecycleFlow
 import com.aplus.core.extensions.serialize
 import com.aplus.core.utils.NavigationHelper
-import com.aplus.core.utils.Status
+import com.aplus.core.utils.ResponseResult
 import com.aplus.feature.home.R
 import com.aplus.feature.home.databinding.FragmentPopularBinding
 import com.aplus.feature.home.presentation.viewmodel.PopularViewModel
@@ -96,6 +96,42 @@ class PopularFragment : Fragment() {
     }
 
     private fun observer() = with(viewModel) {
+        collectLatestLifecycleFlow(movies2) {
+            when(it) {
+                is ResponseResult.Success -> {
+                    binding.apply {
+                        if(adapter.itemCount == 0) {
+                            mainShimmer.apply {
+                                stopShimmer()
+                                visibility = View.GONE
+                            }
+                            rvData.visibility = View.VISIBLE
+                            adapter.addData(it.data.results)
+                        }else{
+                            progressBar.visibility = View.GONE
+                            adapter.addData(it.data.results)
+                            rvData.scrollToPosition(viewModel.lastPositionAdapter)
+                        }
+                    }
+                }
+                is ResponseResult.Error -> {
+                    binding.mainShimmer.apply {
+                        stopShimmer()
+                        visibility = View.GONE
+                    }
+                    Toast.makeText(requireContext(), it.throwable.message, Toast.LENGTH_LONG).show()
+                }
+                ResponseResult.Loading -> {
+                    if(adapter.itemCount == 0) {
+                        binding.mainShimmer.apply {
+                            startShimmer()
+                            visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+
         collectLatestLifecycleFlow(genres){
             adapter.setGenre(it)
             getMovies()
@@ -104,40 +140,40 @@ class PopularFragment : Fragment() {
             if(it.isNotEmpty()) adapter.setFavorite(it)
         }
 
-        collectLatestLifecycleFlow(movies) {
-            when (it.status) {
-                Status.SUCCESS -> {
-                    binding.apply {
-                        if(adapter.itemCount == 0) {
-                            mainShimmer.apply {
-                                stopShimmer()
-                                visibility = View.GONE
-                            }
-                            rvData.visibility = View.VISIBLE
-                            adapter.addData(it.data!!)
-                        }else{
-                            progressBar.visibility = View.GONE
-                            adapter.addData(it.data!!)
-                            rvData.scrollToPosition(viewModel.lastPositionAdapter)
-                        }
-                    }
-                }
-                Status.LOADING -> {
-                    if(adapter.itemCount == 0) {
-                        binding.mainShimmer.apply {
-                            startShimmer()
-                            visibility = View.VISIBLE
-                        }
-                    }
-                }
-                Status.ERROR -> {
-                    binding.mainShimmer.apply {
-                        stopShimmer()
-                        visibility = View.GONE
-                    }
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
+//        collectLatestLifecycleFlow(movies) {
+//            when (it.status) {
+//                Status.SUCCESS -> {
+//                    binding.apply {
+//                        if(adapter.itemCount == 0) {
+//                            mainShimmer.apply {
+//                                stopShimmer()
+//                                visibility = View.GONE
+//                            }
+//                            rvData.visibility = View.VISIBLE
+//                            adapter.addData(it.data!!)
+//                        }else{
+//                            progressBar.visibility = View.GONE
+//                            adapter.addData(it.data!!)
+//                            rvData.scrollToPosition(viewModel.lastPositionAdapter)
+//                        }
+//                    }
+//                }
+//                Status.LOADING -> {
+//                    if(adapter.itemCount == 0) {
+//                        binding.mainShimmer.apply {
+//                            startShimmer()
+//                            visibility = View.VISIBLE
+//                        }
+//                    }
+//                }
+//                Status.ERROR -> {
+//                    binding.mainShimmer.apply {
+//                        stopShimmer()
+//                        visibility = View.GONE
+//                    }
+//                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        }
     }
 }

@@ -1,5 +1,7 @@
 package com.aplus.domain.usecases.remote.discovermovies
 
-data class DiscoverMoviesUseCases (
+import javax.inject.Inject
+
+data class DiscoverMoviesUseCases @Inject constructor (
     val getDiscoverMovies: GetDiscoverMovies
 )

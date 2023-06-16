@@ -1,6 +1,8 @@
 package com.aplus.domain.usecases.remote.apimovie
 
-data class ApiMovieUseCases (
+import javax.inject.Inject
+
+data class ApiMovieUseCases @Inject constructor (
     val getGenresApi: GetGenresApi,
     val getMoviesApi: GetMoviesApi,
     val getNowPlayingApi: GetNowPlayingApi,

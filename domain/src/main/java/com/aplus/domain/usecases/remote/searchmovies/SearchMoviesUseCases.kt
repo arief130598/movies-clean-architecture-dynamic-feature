@@ -1,5 +1,7 @@
 package com.aplus.domain.usecases.remote.searchmovies
 
-data class SearchMoviesUseCases (
+import javax.inject.Inject
+
+data class SearchMoviesUseCases @Inject constructor (
     val getSearchMovies: GetSearchMovies
 )

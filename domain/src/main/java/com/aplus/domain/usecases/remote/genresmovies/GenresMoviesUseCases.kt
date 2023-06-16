@@ -1,5 +1,7 @@
 package com.aplus.domain.usecases.remote.genresmovies
 
-data class GenresMoviesUseCases (
+import javax.inject.Inject
+
+data class GenresMoviesUseCases @Inject constructor (
     val getGenresMovies: GetGenresMovies
 )

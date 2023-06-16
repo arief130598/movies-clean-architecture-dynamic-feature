@@ -34,7 +34,7 @@ class GenresViewModel @Inject constructor(
         getGenres()
     }
 
-    fun getGenres(){
+    private fun getGenres(){
         viewModelScope.launch {
             _genres.emit(Resource.loading(null))
             if (networkHelper.isNetworkConnected()) {
