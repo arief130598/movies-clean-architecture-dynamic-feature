@@ -16,7 +16,6 @@ import retrofit2.http.Query
  *
  */
 interface ApiMovieDB {
-
     @GET("genre/movie/list")
     suspend fun getGenres(
         @Query("api_key") api: String = API_KEY

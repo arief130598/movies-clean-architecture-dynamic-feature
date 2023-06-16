@@ -1,21 +1,41 @@
 package com.aplus.data.di
 
 import android.app.Application
+import com.aplus.core.BuildConfig
 import com.aplus.core.utils.NetworkHelper
 import com.aplus.data.datasource.remote.ApiMovieDB
+import com.aplus.data.datasource.remote.DiscoverMoviesApi
+import com.aplus.data.datasource.remote.GenresMoviesApi
+import com.aplus.data.datasource.remote.ListMoviesApi
+import com.aplus.data.datasource.remote.MoviesApi
+import com.aplus.data.datasource.remote.SearchMoviesApi
 import com.aplus.data.repository.remote.ApiMovieDBRepoImpl
+import com.aplus.data.repository.remote.DiscoverMoviesImpl
+import com.aplus.data.repository.remote.GenresMoviesImpl
+import com.aplus.data.repository.remote.ListMoviesImpl
+import com.aplus.data.repository.remote.MoviesApiImpl
+import com.aplus.data.repository.remote.SearchMoviesImpl
 import com.aplus.domain.repository.remote.ApiMovieRepository
-import com.aplus.domain.usecases.remote.apimovie.ApiMovieUseCases
-import com.aplus.domain.usecases.remote.apimovie.GetGenresApi
-import com.aplus.domain.usecases.remote.apimovie.GetMoviesApi
-import com.aplus.domain.usecases.remote.apimovie.GetNowPlayingApi
-import com.aplus.domain.usecases.remote.apimovie.GetPopularApi
-import com.aplus.domain.usecases.remote.apimovie.GetReviewsApi
-import com.aplus.domain.usecases.remote.apimovie.GetSearchApi
-import com.aplus.domain.usecases.remote.apimovie.GetSimilarApi
-import com.aplus.domain.usecases.remote.apimovie.GetUpcomingApi
-import com.aplus.domain.usecases.remote.apimovie.GetVideosApi
-import dagger.Binds
+import com.aplus.domain.repository.remote.DiscoverMoviesRepository
+import com.aplus.domain.repository.remote.GenresMoviesRepository
+import com.aplus.domain.repository.remote.ListMoviesRepository
+import com.aplus.domain.repository.remote.MoviesApiRepository
+import com.aplus.domain.repository.remote.SearchMoviesRepository
+import com.aplus.domain.usecases.remote.discovermovies.GetDiscoverMovies
+import com.aplus.domain.usecases.remote.discovermovies.DiscoverMoviesUseCases
+import com.aplus.domain.usecases.remote.genresmovies.GenresMoviesUseCases
+import com.aplus.domain.usecases.remote.genresmovies.GetGenresMovies
+import com.aplus.domain.usecases.remote.listmovies.GetNowPlayingMovies
+import com.aplus.domain.usecases.remote.listmovies.GetPopularMovies
+import com.aplus.domain.usecases.remote.listmovies.GetTopRatedMovies
+import com.aplus.domain.usecases.remote.listmovies.GetUpcomingMovies
+import com.aplus.domain.usecases.remote.listmovies.ListMoviesUseCases
+import com.aplus.domain.usecases.remote.moviesapi.GetReviewsMovies
+import com.aplus.domain.usecases.remote.moviesapi.GetSimilarMovies
+import com.aplus.domain.usecases.remote.moviesapi.GetVideosMovies
+import com.aplus.domain.usecases.remote.moviesapi.MoviesApiUseCases
+import com.aplus.domain.usecases.remote.searchmovies.GetSearchMovies
+import com.aplus.domain.usecases.remote.searchmovies.SearchMoviesUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,7 +59,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient() = if (true) {
+    fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         OkHttpClient.Builder()
@@ -71,20 +91,96 @@ class NetworkModule {
 
     @Provides
     @Singleton
+    fun provideDiscoverMoviesApi(retrofit: Retrofit): DiscoverMoviesApi =
+        retrofit.create(DiscoverMoviesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGenresMoviesApi(retrofit: Retrofit): GenresMoviesApi =
+        retrofit.create(GenresMoviesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideListMoviesApi(retrofit: Retrofit): ListMoviesApi =
+        retrofit.create(ListMoviesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMoviesApi(retrofit: Retrofit): MoviesApi =
+        retrofit.create(MoviesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSearchMoviesApi(retrofit: Retrofit): SearchMoviesApi =
+        retrofit.create(SearchMoviesApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideApiRepository(apiMovieDB: ApiMovieDB): ApiMovieRepository =
         ApiMovieDBRepoImpl(apiMovieDB)
 
     @Provides
     @Singleton
-    fun provideApiUseCases(apiMovieRepository: ApiMovieRepository): ApiMovieUseCases = ApiMovieUseCases(
-            getGenresApi = GetGenresApi(apiMovieRepository),
-            getMoviesApi = GetMoviesApi(apiMovieRepository),
-            getNowPlayingApi = GetNowPlayingApi(apiMovieRepository),
-            getPopularApi = GetPopularApi(apiMovieRepository),
-            getSearchApi = GetSearchApi(apiMovieRepository),
-            getSimilarApi = GetSimilarApi(apiMovieRepository),
-            getUpcomingApi = GetUpcomingApi(apiMovieRepository),
-            getVideosApi = GetVideosApi(apiMovieRepository),
-            getReviewsApi = GetReviewsApi(apiMovieRepository)
-        )
+    fun provideDiscoverMoviesRepository(discoverMoviesApi: DiscoverMoviesApi) :
+            DiscoverMoviesRepository = DiscoverMoviesImpl(discoverMoviesApi)
+
+    @Provides
+    @Singleton
+    fun provideGenresMoviesRepository(genresMoviesApi: GenresMoviesApi): GenresMoviesRepository =
+        GenresMoviesImpl(genresMoviesApi)
+
+    @Provides
+    @Singleton
+    fun provideListMoviesRepository(listMoviesApi: ListMoviesApi): ListMoviesRepository =
+        ListMoviesImpl(listMoviesApi)
+
+    @Provides
+    @Singleton
+    fun provideMoviesApiRepository(moviesApi: MoviesApi): MoviesApiRepository =
+        MoviesApiImpl(moviesApi)
+
+    @Provides
+    @Singleton
+    fun provideSearchMoviesRepository(searchMoviesApi: SearchMoviesApi): SearchMoviesRepository =
+        SearchMoviesImpl(searchMoviesApi)
+
+    @Provides
+    @Singleton
+    fun provideDiscoverMoviesUseCases(discoverMoviesRepository: DiscoverMoviesRepository)
+            : DiscoverMoviesUseCases = DiscoverMoviesUseCases(
+        getDiscoverMovies = GetDiscoverMovies(discoverMoviesRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun provideGenresMoviesUseCases(genresMoviesRepository: GenresMoviesRepository)
+            : GenresMoviesUseCases = GenresMoviesUseCases(
+        getGenresMovies = GetGenresMovies(genresMoviesRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun provideListMoviesUseCases(listMoviesRepository: ListMoviesRepository)
+            : ListMoviesUseCases = ListMoviesUseCases(
+        getPopularMovies = GetPopularMovies(listMoviesRepository),
+        getNowPlayingMovies = GetNowPlayingMovies(listMoviesRepository),
+        getTopRatedMovies = GetTopRatedMovies(listMoviesRepository),
+        getUpcomingMovies = GetUpcomingMovies(listMoviesRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun provideMoviesApiUseCases(moviesApiRepository: MoviesApiRepository)
+            : MoviesApiUseCases = MoviesApiUseCases(
+        getReviewsMovies = GetReviewsMovies(moviesApiRepository),
+        getSimilarMovies = GetSimilarMovies(moviesApiRepository),
+        getVideosMovies = GetVideosMovies(moviesApiRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun provideSearchUseCases(searchMoviesRepository: SearchMoviesRepository)
+            : SearchMoviesUseCases = SearchMoviesUseCases(
+        getSearchMovies = GetSearchMovies(searchMoviesRepository)
+    )
 }
