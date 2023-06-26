@@ -23,53 +23,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         initActivity()
     }
 
     private fun initActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
         val navController = navHostFragment.navController
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.genresFragment,
-                R.id.popularFragment,
-                R.id.nowPlayingFragment,
-                R.id.upcomingFragment
-            )
-        )
-        binding.topAppBar.setupWithNavController(navController, appBarConfiguration)
         binding.navBottom.setupWithNavController(navController)
-        binding.topAppBar.setOnMenuItemClickListener {
-            it.onNavDestinationSelected(navController)
-            true
-        }
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.favoriteFragment -> {
-                    binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = false
-                    binding.topAppBar.menu.findItem(R.id.searchFragment).isVisible = true
-                    binding.topAppBar.show()
-                    binding.navBottom.hide()
-                }
-                R.id.searchFragment -> {
-                    binding.topAppBar.remove()
-                    binding.navBottom.hide()
-                }
-                resourceDetail.id.detailFragment -> {
-                    binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = false
-                    binding.topAppBar.menu.findItem(R.id.searchFragment).isVisible = false
-                    binding.topAppBar.show()
-                    binding.navBottom.remove()
-                }
-                else -> {
-                    binding.topAppBar.menu.findItem(R.id.favoriteFragment).isVisible = true
-                    binding.topAppBar.menu.findItem(R.id.searchFragment).isVisible = true
-                    binding.topAppBar.show()
-                    binding.navBottom.show()
-                }
-            }
-        }
     }
 }

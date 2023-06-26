@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="image_url">https://image.tmdb.org/t/p/w185</string>
+    <string name="background_image_url">https://image.tmdb.org/t/p/w780</string>
     <string name="avatar_url">https://image.tmdb.org/t/p/w92</string>
     <string name="poster">Poster</string>
     <string name="favorite">Favorite</string>

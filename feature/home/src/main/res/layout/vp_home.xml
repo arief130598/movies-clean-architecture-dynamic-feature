@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/ivTrendMovies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/trending_movies"
+        tools:src="@drawable/image_backdrop" />
+
+    <TextView
+        android:id="@+id/tvTrendTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dim16"
+        android:textSize="@dimen/text20"
+        android:textColor="@color/white"
+        android:fontFamily="@font/black_ops_one"
+        tools:text="Extraction 2"
+        app:layout_constraintBottom_toTopOf="@id/tvTrendOverview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvTrendOverview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/dim16"
+        android:layout_marginBottom="@dimen/dim16"
+        android:textSize="@dimen/text14"
+        android:textColor="@color/white"
+        android:fontFamily="@font/roboto"
+        tools:text="Tasked with extracting a family who is at the mercy of a Georgian gangster, Tyler Rake infiltrates one of the world's deadliest prisons in order to save them."
+        app:layout_constraintBottom_toBottomOf="@+id/ivTrendMovies"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

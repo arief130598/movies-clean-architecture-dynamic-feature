@@ -90,7 +90,7 @@ class DetailFragment : Fragment() {
     fun setupUI(item: Movies) = with(binding) {
         if (!item.backdrop_path.isNullOrEmpty()) {
             Glide.with(requireContext())
-                .load(requireContext().getString(R.string.background_image_url) + item.backdrop_path)
+                .load(requireContext().getString(com.aplus.common.R.string.background_image_url) + item.backdrop_path)
                 .error(resourceCommon.drawable.no_image)
                 .into(backgroundPoster)
         }

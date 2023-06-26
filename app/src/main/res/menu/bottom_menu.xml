@@ -2,26 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/genresFragment"
-        android:title="@string/genres"
-        android:icon="@drawable/ic_genres"
-        />
-
-    <item
-        android:id="@+id/popularFragment"
-        android:title="@string/popular"
-        android:icon="@drawable/ic_fire"
-        />
-
-    <item
-        android:id="@+id/nowPlayingFragment"
-        android:title="@string/now_playing"
+        android:id="@+id/homeFragment"
+        android:title="@string/title_home"
         android:icon="@drawable/ic_now_playing"
         />
 
-    <item
-        android:id="@+id/upcomingFragment"
-        android:title="@string/upcoming"
-        android:icon="@drawable/ic_upcoming"
-        />
 </menu>

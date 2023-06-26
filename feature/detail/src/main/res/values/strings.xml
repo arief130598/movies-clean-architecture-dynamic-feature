@@ -5,7 +5,6 @@
     <string name="popularity">Popularity :</string>
     <string name="rating_total">Rating Total :</string>
     <string name="language">Language :</string>
-    <string name="background_image_url">https://image.tmdb.org/t/p/w780</string>
     <string name="review">Reviews :</string>
     <string name="similars">Similars :</string>
 </resources>

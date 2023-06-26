@@ -1,3 +1,4 @@
+import extensions.api
 import extensions.implementation
 import extensions.kapt
 import extensions.project
@@ -8,7 +9,6 @@ plugins {
     id(Plugins.ANDROID)
     id(Plugins.NAVIGATION_SAFE_ARGS)
     id(Plugins.DAGGER_HILT)
-    id(Plugins.DOKKA)
     kotlin(Plugins.KAPT)
 }
 
@@ -24,7 +24,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
-        dataBinding = true
+        viewBinding = true
     }
     buildTypes {
         release {
